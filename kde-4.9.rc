@@ -6,14 +6,17 @@
 #    dirty fixups, tarballs and other Buddy files will be stored.
 #    So make sure you have a lot of diskspace available for TOP.
 #
-# 2. Set the Major, Minor, Patch, etc settings in the [Release] section
+# 2. Set a Project name in the [General] section.
+#
+# 3. Set the Major, Minor, Patch, etc settings in the [Release] section
 #    according to the release you want to make.
 #
-# 3. You can adjust the Git or SVN settings in the [DEFAULT] section if desired
+# 4. You can adjust the Git or SVN settings in the [DEFAULT] section if desired
 #
 # NOTE: this configuration file should be re-used for all releases in the
 #       lifespan of the major release. i.e. you should re-use this for
-#       KDE 4.8.80 all the way through to KDE 4.9.4
+#       KDE 4.8.80 all the way through to KDE 4.9.4. Only the settings in
+#       the [Release] section should need to be modified.
 
 #default values that can be used like variables
 [DEFAULT]
@@ -45,6 +48,10 @@ Desc=programs that usually only a system administrator might need
 
 [Project:kdeartwork]
 Url=%(SVN)s/kdeartwork
+Desc=additional themes, widgets, screensavers, sounds, wallpapers, etc for KDE
+
+[Project:kde-base-artwork]
+Url=%(SVN)s/kde-base-artwork
 Desc=additional themes, widgets, screensavers, sounds, wallpapers, etc for the KDE base system
 
 [Project:kdegames]

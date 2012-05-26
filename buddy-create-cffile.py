@@ -66,7 +66,7 @@ def main():
 #
 # 2. Set a Project name in the [General] section.
 #
-# 3. Set the Major, Minor, Patch settings in the [Release] section
+# 3. Set the Major, Minor, Patch, etc settings in the [Release] section
 #    according to the release you want to make.
 #
 # 4. You can adjust the Git or SVN settings in the [DEFAULT] section if desired
@@ -109,6 +109,10 @@ Desc=programs that usually only a system administrator might need
 
 [Project:kdeartwork]
 Url=%(SVN)s/kdeartwork
+Desc=additional themes, widgets, screensavers, sounds, wallpapers, etc for KDE
+
+[Project:kde-base-artwork]
+Url=%(SVN)s/kde-base-artwork
 Desc=additional themes, widgets, screensavers, sounds, wallpapers, etc for the KDE base system
 
 [Project:kdegames]
