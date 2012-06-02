@@ -6,32 +6,36 @@
 
 #### Create/Update the configfile for this release
 
-* If making a new major release then you will need to create a brand new configfile.
+* If making a new major release you will need to create a brand new configfile.
 
-   Use _buddy-create-cffile.py_ to create the new configfile, for example to create
-   a new configfile for the KDE SC 4.9 release:
+   Use _buddy-create-cffile.py_ to create the new configfile.
+   For example to create a new configfile for the KDE SC 4.9 release:
 
    % buddy-create-cffile.py kde-4.9.rc
 
-   Once the configfile is created you must hand-edit, changing a few of the settings
-   near the top of the file as needed.
+   Once the configfile is created you must hand-edit, changing a few of the
+   settings near the top of the file as needed.
 
-* If simply changing the minor version or patch level then you can edit the associated
-  settings for Minor or Patch in the configfile.  Not much else should need to be changed.
+* If simply changing the minor version or patch level then you can edit the
+  associated settings for Minor or Patch in the configfile.  Not much else
+  should need to be changed.
 
-* Inspecting the configfile for a KDE SC release, you should see many, many projects listed along
-  with their descriptions. If you don't see this long list, something went terribly long.
+* Inspecting the configfile for a KDE SC release, you should see many projects
+  listed along with their descriptions. If you don't see this long list,
+  something went terribly long.
 
 #### Checkout writable repos
 
-* The _buddy-checkouts.py_ program is used to checkout a read-write copy of the all the
-  project repositories.  When completed, you will find all the repositories in TOP/kde-VERSION/sources.
+* The _buddy-checkouts.py_ program is used to checkout a read-write copy of
+  the all the project repositories.  When completed, you will find all the
+  repositories in TOP/kde-VERSION/sources.
 
-* You might want to make a dry-run before doing the real checkouts.  Pass the "--dry-run" option
-  to _buddy-checkouts.py_ if you want to do this.
+* You might want to make a dry-run before doing the real checkouts.
+  Pass the "--dry-run" option to _buddy-checkouts.py_ if you want to do this.
 
-* By default, a log of the checkouts will be saved to the file "checkout.log" in your current working dir,
-  but you can change that with the "--logFile=/path/to/logfile" option.
+* By default, a log of the checkouts will be saved to the file "checkout.log"
+  in your current working dir, but you can change the logfile with the 
+  "--logFile=/path/to/logfile" option.
 
 * __TODO__ switch to the KDE/Major.Minor branch as needed
 
@@ -72,6 +76,8 @@
   
 * __TODO__ Use buddy-createtag
 
+* __TODO__ Ensure clean repos??
+
 * _buddy-createtag.py_ makes a tag for each project with the name "vVERSION"
 
 * The tag is created from the current branch. __TODO_ switch to branch KDE/Major.Minor as needed.
@@ -83,6 +89,8 @@
 * Use _buddy-pack.py_
 
 * __TODO__ currently buddy-pack.py uses CPack.  Let's dump that.
+
+* __TODO__ Ensure clean repos??
 
 * basically we want to 
   
@@ -106,10 +114,11 @@
 
 #### kdelibs
 
-* When moving to new minor versions (i.e. 4.8 to 4.9), we are permitted to branch kdelibs
-  for versioning purposes.  As dfaure says, "I'm opposed to new branches to maintain. Switching to
-  "bugfixes in 4.8" to "bugfixes in 4.9, 4.8 is dead" doesn't increase the number of branches to maintain,
-  so that's fine.
+* When moving to new minor versions (i.e. 4.8 to 4.9), we are permitted to
+  branch kdelibs for versioning purposes.
+  As dfaure says: "I'm opposed to new branches to maintain. Switching to
+  "bugfixes in 4.8" to "bugfixes in 4.9, 4.8 is dead" doesn't increase the
+  number of branches to maintain, so that's fine."
 
 #### kde-l10n?
 
@@ -120,5 +129,3 @@
 * __TODO__ give bcooksley and PoVAddict a python program that branches
   each project and optionally pushes that new branch
   (options: --create-only, --dry-run)
-
-
