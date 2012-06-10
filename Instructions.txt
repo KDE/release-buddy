@@ -11,7 +11,7 @@
    Use _buddy-create-cffile.py_ to create the new configfile.
    For example to create a new configfile for the KDE SC 4.9 release:
 
-   % buddy-create-cffile.py kde-4.9.rc
+         % buddy-create-cffile.py kde-4.9.rc
 
    Once the configfile is created you must hand-edit, changing a few of the
    settings near the top of the file as needed.
@@ -26,12 +26,20 @@
 
 #### Checkout writable repos
 
-* The _buddy-checkouts.py_ program is used to checkout a read-write copy of
+* The buddy _checkout_ command is used to checkout a read-write copy of
   the all the project repositories.  When completed, you will find all the
   repositories in TOP/kde-VERSION/sources.
 
+  For example:
+
+         % buddy checkout kde-4.9.rc
+
 * You might want to make a dry-run before doing the real checkouts.
-  Pass the "--dry-run" option to _buddy-checkouts.py_ if you want to do this.
+  Pass the "--dry-run" option to buddy if you want to do this.
+
+  Like so:
+
+         % buddy checkout kde-4.9.rc --dry-run
 
 * By default, a log of the checkouts will be saved to the file "checkout.log"
   in your current working dir, but you can change the logfile with the 
@@ -74,11 +82,11 @@
 
 #### Create tags (but don't push tags)
   
-* __TODO__ Use buddy-createtag
+* __TODO__ Use buddy createtag
 
 * __TODO__ Ensure clean repos??
 
-* _buddy-createtag.py_ makes a tag for each project with the name "vVERSION"
+* buddy createtag makes a tag for each project with the name "vVERSION"
 
 * The tag is created from the current branch. __TODO_ switch to branch KDE/Major.Minor as needed.
 
@@ -86,15 +94,22 @@
 
 #### Create tarball
 
-* Use _buddy-pack.py_
+* Use the buddy _pack_ command.
+  For example:
 
-* __TODO__ currently buddy-pack.py uses CPack.  Let's dump that.
+        % buddy pack kde-4.9.rc
+
+* __TODO__ currently pack uses CPack.  Let's dump that.
 
 * __TODO__ Ensure clean repos??
 
 * basically we want to 
   
   % (cd kde-VERSION/project; tar Jcvf kde-VERSION/tarballs/project-VERSION.tar.xz --exclude .git|.svn .)
+
+#### Do a final testbuild
+
+* Use mjansen's build-tool?
 
 #### Upload for Packager testing
 
@@ -110,7 +125,7 @@
 
 * Push the tags after a few days of packager testing. (do we need to wait longer?)
 
-* __TODO__ Write _buddy-pushtags.py_ for this task
+* __TODO__ Write buddy pushtags command for this task
 
 #### kdelibs
 

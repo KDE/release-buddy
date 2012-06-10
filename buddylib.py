@@ -63,7 +63,7 @@ def printEndAll():
 def printContinuing():
   return "Continuing due to keep-going option\n"
 
-def ChangeDir(options,d):
+def ChangeDir(options, d):
   if options.dryrun:
     return
 
@@ -72,8 +72,8 @@ def ChangeDir(options,d):
   except OSError:
     fail("Unable to navigate to the directory \"" + d + "\"")
 
-def MakeDir(options,d,type):
-  Logger(options,"Create " + type + " directory : " + d + "\n")
+def MakeDir(options, d, type):
+  Logger(options, "Create " + type + " directory : " + d + "\n")
   if options.dryrun:
     return
 
@@ -82,7 +82,7 @@ def MakeDir(options,d,type):
   except OSError:
     fail("Unable to create " + type + " directory \"" + d + "\"")
 
-def Logger(options,lines):
+def Logger(options, lines):
   if not options.Quiet:
     sys.stdout.write(lines)
 

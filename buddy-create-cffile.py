@@ -64,7 +64,7 @@ def main():
 #    dirty fixups, tarballs and other Buddy files will be stored.
 #    So make sure you have a lot of diskspace available for TOP.
 #
-# 2. Set a Project name in the [General] section.
+# 2. Set a Collection name in the [General] section.
 #
 # 3. Set the Major, Minor, Patch, etc settings in the [Release] section
 #    according to the release you want to make.
@@ -81,22 +81,22 @@ def main():
 '''
 #default values that can be used like variables
 [DEFAULT]
-Git=git://anongit.kde.org
-SVN=svn://anonsvn.kde.org/home/kde/trunk/KDE
+Git=git@git.kde.org                           ;read-write url
+SVN=svn+ssh://svn.kde.org/home/kde/trunk/KDE  ;read-write url
 
 [General]
 #TOP is where you want to store all the checkouts, tarballs and everything
 TOP=/data/buddy
-Project=foo  ;kde for example
+Collection=foo  ;kde for example
 
 [Release]
 Major=X
 Minor=Y
 Patch=Z ;patch levels: 80=>beta1, 90=>beta2, 95=>rc1, 97=>rc2
 
-###############################################################
-## Below here is a list of all the projects for this release ##
-###############################################################
+##################################################################
+## Below here is a list of all the projects for this collection ##
+##################################################################
 
 ## Start SVN projects list
 [Project:kde-wallpapers]
@@ -149,9 +149,9 @@ Desc=The Oxygen Icon Collection
       continue
     url = line.split(' ')[1]
     cf.write("[Project:" + name + "]\n")
-    url = url.replace("git://anongit.kde.org", "%(Git)s")
+    url = url.replace("git://anongit.kde.org/", "%(Git)s:")
     cf.write("Url=" + url + "\n")
-    cf.write("Desc=" + " ".join(line.split(' ')[2:]) + "\n")
+    cf.write("Desc=" + " ".join(line.split(' ')[2:]).replace('h1. ','') + "\n")
 
 ### We are Done
   cf.close()

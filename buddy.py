@@ -26,6 +26,7 @@ from optparse import OptionParser, SUPPRESS_HELP
 import ConfigParser
 
 from buddylib import *
+from buddycommands import buddy_doit
 
 def main():
 
@@ -35,7 +36,9 @@ def main():
   usage = "usage %prog [options] command cfgfile" + "\n\n" + command_Desc + "\n" + cfgfile_Desc
   parser = OptionParser(usage, version="%prog, version " + BuddyVersion())
   parser.add_option("--top", action="store_false", help=SUPPRESS_HELP)
-  parser.add_option("--project", action="store_false", help=SUPPRESS_HELP)
+  parser.add_option("--sources", action="store_false", help=SUPPRESS_HELP)
+  parser.add_option("--tarballs", action="store_false", help=SUPPRESS_HELP)
+  parser.add_option("--collection", action="store_false", help=SUPPRESS_HELP)
   parser.add_option("-q", "--quiet", action="store_true", dest="Quiet",
                     default=False,
                     help="don't print any diagnostic or error messages")
@@ -48,6 +51,8 @@ def main():
   parser.add_option("-k", "--keep-going", action="store_true", dest="keepgoing",
                     default=False,
                     help="keep processing even if an abnormal (but not fatal) condition is encountered")
+  parser.add_option("--projects", dest="ProjectList",
+                    help="a list of projects (comma-separated) on which to execute the command. By default, all the projects in the configfile will be used.")
   parser.add_option("--logFile", dest="LogFile",
                     help="the name of a file for logging the runtime information. "
                     "Specify a fullpath else the file will be written into the current working directory as \"command\".log")
@@ -65,6 +70,9 @@ def main():
   if options.Quiet and options.Verbose:
     parser.error("Cannot be quiet and verbose simultaneously")
 
+  if not options.LogFile:
+    options.LogFile = os.getcwd() + os.sep + command + '.log'
+
 ### Parse Configuration File
   cfParser = ConfigParser.ConfigParser()
   cfParser.optionxform = str
@@ -80,31 +88,25 @@ def main():
 
   BRANCH = readComponentVersion(cfParser, "Release")
 
-### Create the top-level checkout directory, if necessary
+### Create the top-level collection directory, if necessary
   try:
     options.Top = cfParser.get("General","TOP")
   except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
     fail("ConfigFile is missing a section called \"General\" with a \"TOP\" setting")
 
   if not os.path.exists(options.Top):
-    MakeDir(options,options.Top,"top-level")
+    MakeDir(options, options.Top, "top-level")
 
   try:
-    options.Project = cfParser.get("General","Project")
+    options.Collection = cfParser.get("General","Collection")
   except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
-    fail("ConfigFile is missing a section called \"General\" with a \"Project\" setting")
+    fail("ConfigFile is missing a section called \"General\" with a \"Collection\" setting")
 
-  options.Top = options.Top + os.sep + options.Project + '-' + BRANCH
+  options.Top = options.Top + os.sep + options.Collection + '-' + BRANCH
   if not os.path.exists(options.Top):
-    MakeDir(options,options.Top,"project")
-  
-  options.Top = options.Top + os.sep + "sources"
-  if not os.path.exists(options.Top):
-    MakeDir(options,options.Top,"checkout")
+    MakeDir(options, options.Top, "collection")
 
 ### Log Start of Runs
-  if not options.LogFile:
-    options.LogFile = command + '.log'
 
   LoggerClear(options)
   startUTC = nowUTC()
@@ -135,8 +137,23 @@ def main():
                     'desc' : Projs['desc'],
                     'url'  : Projs['url']})
 
+### Check projects specified on the command line
+  Ps = []
+  if options.ProjectList:
+    for p in options.ProjectList.split(','):
+      found = False
+      for a in AllPs:
+        if a['name'] == p:
+          Ps.append(a)
+          found = True
+          break
+      if not found:
+        fail("Specified project \"" + p + "\" is not in this collection")
+  else:
+    Ps = AllPs
+    
 ### DoIt!
-  for p in AllPs:
+  for p in Ps:
     buddy_doit(command, options, p, BRANCH)
 
 ### Log End of Runs
