@@ -1,5 +1,6 @@
 # Part of Release Buddy: Commands
 
+from buddylist import *
 from buddycheckout import *
 from buddypack import *
 
@@ -25,8 +26,11 @@ def buddy_doit(command, options, project, branch):
 
   options.Sources = options.Top + os.sep + "sources"
   options.Tarballs = options.Top + os.sep + "tarballs"
+
+  if command == "list":
+    return buddy_list(options, project, branch)
   
-  if command == "checkout":
+  elif command == "checkout":
     if not os.path.exists(options.Sources):
       MakeDir(options, options.Sources, command)
     return buddy_checkout(options, project, branch)

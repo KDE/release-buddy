@@ -35,7 +35,7 @@ def warning(options, message):
   if not options.Quiet:
     sys.stdout.write("Warning: " + message + "\n")
 
-COMMANDS= ['checkout','pack']
+COMMANDS= ['list','checkout','pack']
 def verifyCommand(command):
   if command in COMMANDS:
     return True
