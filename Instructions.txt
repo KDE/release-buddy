@@ -16,6 +16,10 @@
    Once the configfile is created you must hand-edit, changing a few of the
    settings near the top of the file as needed.
 
+   Note: _buddy-create-cffile.py_ relies on _kde-checkout-list.pl_ which
+   you can find in kdesdk/scripts.  You need to make sure that Perl script
+   is available in your execute path.
+
 * If simply changing the minor version or patch level then you can edit the
   associated settings for Minor or Patch in the configfile.  Not much else
   should need to be changed.
