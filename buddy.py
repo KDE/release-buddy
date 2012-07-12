@@ -107,14 +107,14 @@ def main():
     MakeDir(options, options.Top, "collection")
 
 ### Log Start of Runs
-
-  LoggerClear(options)
-  startUTC = nowUTC()
-  outlines = ''
-  outlines = outlines + makeAHeadLine() + "\n"
-  outlines = outlines + "BEGIN AT: " + dtStrUTC(startUTC) + "\n"
-  outlines = outlines + makeAHeadLine() + "\n"
-  Logger(options, outlines)
+  if command != "list":
+    LoggerClear(options)
+    startUTC = nowUTC()
+    outlines = ''
+    outlines = outlines + makeAHeadLine() + "\n"
+    outlines = outlines + "BEGIN AT: " + dtStrUTC(startUTC) + "\n"
+    outlines = outlines + makeAHeadLine() + "\n"
+    Logger(options, outlines)
 
 ### Generate the List of Projects
   PPrefix = "Project:"
@@ -157,13 +157,14 @@ def main():
     buddy_doit(command, options, p, BRANCH)
 
 ### Log End of Runs
-  endUTC = nowUTC()
-  outlines = ''
-  outlines = outlines + makeAHeadLine() + "\n"
-  outlines = outlines + "END AT: " + dtStrUTC(endUTC) + "\n"
-  outlines = outlines + "TOTAL TIME: " + str(endUTC - startUTC) + "\n"
-  outlines = outlines + makeAHeadLine() + "\n"
-  Logger(options, outlines)
+  if command != "list":
+    endUTC = nowUTC()
+    outlines = ''
+    outlines = outlines + makeAHeadLine() + "\n"
+    outlines = outlines + "END AT: " + dtStrUTC(endUTC) + "\n"
+    outlines = outlines + "TOTAL TIME: " + str(endUTC - startUTC) + "\n"
+    outlines = outlines + makeAHeadLine() + "\n"
+    Logger(options, outlines)
 
 ### We are Done
   sys.exit(0)
