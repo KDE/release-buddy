@@ -427,10 +427,6 @@ Desc=KGpg is a simple interface for GnuPG, a powerful encryption utility.
 Url=%(Git)s:kremotecontrol
 Desc=KRemoteControl (formerly known as KDELirc) is a KDE frontend for your remote controls.
 
-[Project:ksecrets]
-Url=%(Git)s:ksecrets
-Desc=Here you'll find the code of the secrets management infrastructure for KDE. Please visit TechBase - see link below.
-
 [Project:ktimer]
 Url=%(Git)s:ktimer
 Desc=KTimer is a little tool to execute programs after some time.
