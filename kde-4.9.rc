@@ -375,10 +375,6 @@ Desc=library for interfacing with CDs
 Url=%(Git)s:mplayerthumbs
 Desc=MPlayer based thumbnail generator for video files.
 
-[Project:strigi-multimedia]
-Url=%(Git)s:strigi-multimedia
-Desc=Various analyzers to provide multimedia support to Strigi
-
 [Project:kdepim]
 Url=%(Git)s:kdepim
 Desc=KDE's Personal Information Management suite
