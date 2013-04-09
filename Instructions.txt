@@ -49,7 +49,7 @@
   in your current working dir, but you can change the logfile with the 
   "--logFile=/path/to/logfile" option.
 
-* __TODO__ switch to the KDE/Major.Minor branch as needed
+* __TODO__ switch to the KDE/Major.Minor branch as needed for SVN
 
 #### Make changes to the repos as needed, for example:
 
@@ -148,3 +148,4 @@
 * __TODO__ give bcooksley and PoVAddict a python program that branches
   each project and optionally pushes that new branch
   (options: --create-only, --dry-run)
+  The rights for this is included in the "release-team" ACL group
