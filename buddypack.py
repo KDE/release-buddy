@@ -43,9 +43,7 @@ def package(options, name, desc, version):
   args = createCPackCommand(options)
 
   #start logging this command
-  outlines = ''
-  outlines = outlines + "Begin Packaging " + name + "\n"
-  Logger(options, outlines)
+  info("Begin Packaging " + name)
 
   ChangeDir(options, options.Tarballs)
 
@@ -72,10 +70,8 @@ def package(options, name, desc, version):
   shutil.rmtree("_CPack_Packages", True)
 
   #finish logging this command
-  outlines = ''
-  outlines = outlines + "Packaging Complete\n"
-  outlines = outlines + makeASubLine() + "\n"
-  Logger(options, outlines)
+  info("Packaging Complete")
+  info(makeASubLine())
 
 def writeCPackConfig(f, name, desc, version, srcpath):
   try:

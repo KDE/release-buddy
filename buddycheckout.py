@@ -27,9 +27,7 @@ def buddy_checkout(options, project, branch):
     return git_update(options, project['name'], project['url'])
 
 def git_update(options, name, url):
-  outlines = ''
-  outlines = outlines + "Begin Git Checkout for " + name + "\n"
-  Logger(options, outlines)
+  info("Begin Git Checkout for " + name + ", using branch: " + branch)
 
   ChangeDir(options, options.Sources)
   if not os.path.exists(name):
@@ -42,15 +40,11 @@ def git_update(options, name, url):
   else:
     warning(path + " exists and is not a Git clone!")
 
-  outlines = ''
-  outlines = outlines + "Checkout Complete\n"
-  outlines = outlines + makeASubLine() + "\n"
-  Logger(options, outlines)
+  info("Checkout Complete")
+  info(makeASubLine())
 
 def svn_update(options, name, url):
-  outlines = ''
-  outlines = outlines + "Begin SVN Checkout for " +  name + "\n"
-  Logger(options, outlines)
+  info("Begin SVN Checkout for " +  name)
 
   ChangeDir(options, options.Sources)
   if not os.path.exists(name):
@@ -59,9 +53,7 @@ def svn_update(options, name, url):
     RUNIT(options, "svn", "cleanup " + name)
     RUNIT(options, "svn", "update " + name)
   else:
-    warning(options, module + " exists and is not a SVN checkout!")
+    warning(options, name + " exists and is not a SVN checkout!")
 
-  outlines = ''
-  outlines = outlines + "Checkout Complete\n"
-  outlines = outlines + makeASubLine() + "\n"
-  Logger(options, outlines)
+  info("Checkout Complete")
+  info(makeASubLine())

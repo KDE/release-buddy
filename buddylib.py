@@ -23,17 +23,10 @@ import os
 import subprocess
 import sys
 import ConfigParser
+from buddylogger import *
 
 def BuddyVersion():
   return "0.91"
-
-def fail(message):
-  sys.stdout.write("Failure: " + message + "\n")
-  sys.exit(1)
-
-def warning(options, message):
-  if not options.Quiet:
-    sys.stdout.write("Warning: " + message + "\n")
 
 COMMANDS= ['list','checkout','pack']
 def verifyCommand(command):
@@ -73,7 +66,7 @@ def ChangeDir(options, d):
     fail("Unable to navigate to the directory \"" + d + "\"")
 
 def MakeDir(options, d, type):
-  Logger(options, "Create " + type + " directory : " + d + "\n")
+  info("Create " + type + " directory : " + d + "\n")
   if options.dryrun:
     return
 
@@ -81,21 +74,6 @@ def MakeDir(options, d, type):
     os.mkdir(d)
   except OSError:
     fail("Unable to create " + type + " directory \"" + d + "\"")
-
-def Logger(options, lines):
-  if not options.Quiet:
-    sys.stdout.write(lines)
-
-  if options.dryrun:
-    return
-
-  try:
-    of = open(options.LogFile, 'a')
-  except IOError:
-    fail("logfile \"" + options.LogFile + "\" cannot be opened for writing")
-
-  of.write(lines)
-  of.close()
 
 def LoggerClear(options):
   if options.dryrun:
@@ -112,17 +90,15 @@ def RUNIT(options, cmd, args):
     cmd = cmd + " " + args
 
   if options.dryrun:
-    sys.stdout.write("Dry Run: " + cmd + "\n")
+    info("Dry Run: " + cmd)
     if cmd.find("kde-checkout-list") != -1 and cmd.find("--dry-run") != -1:
        subprocess.call(cmd.split(' '))
     return
 
-  outlines = ''
-  outlines = outlines + "==> Start Run: " + cmd + "\n"
-  outlines = outlines + "Working Dir: " + os.getcwd() + "\n"
+  info("==> Start Run: " + cmd)
+  info("Working Dir: " + os.getcwd())
   startUTC = nowUTC()
-  outlines = outlines + "Start Time: " + dtStrUTC(startUTC) + "\n"
-  Logger(options, outlines)
+  info("Start Time: " + dtStrUTC(startUTC))
 
   if options.Quiet:
     nf = open(os.devnull, 'w')
@@ -131,24 +107,21 @@ def RUNIT(options, cmd, args):
   else:
     stat = subprocess.call(cmd.split(' '))
 
-  outlines = ''
-  outlines = outlines + "<== End Run: "
+  info("<== End Run: ")
   if stat:
-    outlines = outlines + "Failure condition encountered (stat=" + str(stat) + ")\n"
+    info("Failure condition encountered (stat=" + str(stat) + ")")
   else:
-    outlines = outlines + "Completed successfully\n"
+    info("Completed successfully")
   endUTC = nowUTC()
-  outlines = outlines + "End Time: " + dtStrUTC(endUTC) + "\n"
-  outlines = outlines + "Elapsed Time: " + str(endUTC - startUTC) + "\n"
+  info("End Time: " + dtStrUTC(endUTC))
+  info("Elapsed Time: " + str(endUTC - startUTC))
 
   if stat:
     if options.keepgoing == False:
-      outlines = outlines + printEndAll()
+      info(printEndAll())
     else:
       stat = 0  #pretend nothing is wrong
-      outlines = outlines + printContinuing()
-
-  Logger(options, outlines)
+      info(printContinuing())
 
   if stat:
     sys.exit(stat)

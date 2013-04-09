@@ -62,11 +62,12 @@ def main():
   if len(args) != 2:
     parser.error("Must supply the command and cffile arguments")
 
+  initLogging(options)
+
   command = args[0]
   if not verifyCommand(command):
-    print 'available commands are:', commandList()
-    sys.exit(1)
-  
+    fail('available commands are:', commandList())
+
   if options.Quiet and options.Verbose:
     parser.error("Cannot be quiet and verbose simultaneously")
 
@@ -110,11 +111,9 @@ def main():
   if command != "list":
     LoggerClear(options)
     startUTC = nowUTC()
-    outlines = ''
-    outlines = outlines + makeAHeadLine() + "\n"
-    outlines = outlines + "BEGIN AT: " + dtStrUTC(startUTC) + "\n"
-    outlines = outlines + makeAHeadLine() + "\n"
-    Logger(options, outlines)
+    info(makeAHeadLine())
+    info("BEGIN AT: " + dtStrUTC(startUTC))
+    info(makeAHeadLine())
 
 ### Generate the List of Projects
   PPrefix = "Project:"
@@ -159,12 +158,10 @@ def main():
 ### Log End of Runs
   if command != "list":
     endUTC = nowUTC()
-    outlines = ''
-    outlines = outlines + makeAHeadLine() + "\n"
-    outlines = outlines + "END AT: " + dtStrUTC(endUTC) + "\n"
-    outlines = outlines + "TOTAL TIME: " + str(endUTC - startUTC) + "\n"
-    outlines = outlines + makeAHeadLine() + "\n"
-    Logger(options, outlines)
+    info(makeAHeadLine())
+    info("END AT: " + dtStrUTC(endUTC))
+    info("TOTAL TIME: " + str(endUTC - startUTC))
+    info(makeAHeadLine())
 
 ### We are Done
   sys.exit(0)
