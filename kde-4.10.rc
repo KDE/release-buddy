@@ -32,6 +32,7 @@ Collection=kde  ;KDE SC
 Major=4
 Minor=9
 Patch=80 ;patch levels: 80=>beta1, 90=>beta2, 95=>rc1, 97=>rc2
+Branch=KDE/%(Major)s.%(Minor)s
 
 ##################################################################
 ## Below here is a list of all the projects for this collection ##

@@ -22,7 +22,7 @@ from buddypack import *
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
-def buddy_doit(command, options, project, branch):
+def buddy_doit(command, options, project, branch, version):
 
   options.Sources = options.Top + os.sep + "sources"
   options.Tarballs = options.Top + os.sep + "tarballs"
@@ -38,7 +38,7 @@ def buddy_doit(command, options, project, branch):
   elif command == "pack":
     if not os.path.exists(options.Tarballs):
       MakeDir(options, options.Tarballs, command)
-    return buddy_pack(options, project, branch)
+    return buddy_pack(options, project, version)
   
   elif command == "createtag":
     fail("Sorry, the createtag command is not implemented yet.")

@@ -75,7 +75,7 @@ def main():
     options.LogFile = os.getcwd() + os.sep + command + '.log'
 
 ### Parse Configuration File
-  cfParser = ConfigParser.ConfigParser()
+  cfParser = ConfigParser.SafeConfigParser()
   cfParser.optionxform = str
 
   cfgfile = args[1]
@@ -87,7 +87,8 @@ def main():
   except ConfigParser.MissingSectionHeader:
     fail(cfgfile + ": configFile is not properly formatted")
 
-  BRANCH = readComponentVersion(cfParser, "Release")
+  BRANCH = cfParser.get("Release", "Branch")
+  VERSION = readComponentVersion(cfParser, "Release")
 
 ### Create the top-level collection directory, if necessary
   try:
@@ -153,7 +154,7 @@ def main():
     
 ### DoIt!
   for p in Ps:
-    buddy_doit(command, options, p, BRANCH)
+    buddy_doit(command, options, p, BRANCH, VERSION)
 
 ### Log End of Runs
   if command != "list":
