@@ -71,7 +71,7 @@ def MakeDir(options, d, type):
     return
 
   try:
-    os.mkdir(d)
+    os.makedirs(d)
   except OSError:
     fail("Unable to create " + type + " directory \"" + d + "\"")
 
