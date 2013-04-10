@@ -22,7 +22,7 @@
 
 import os
 import sys
-from optparse import OptionParser, SUPPRESS_HELP
+import argparse
 import ConfigParser
 
 from buddylib import *
@@ -33,38 +33,35 @@ def main():
 ### Parse Command Line
   command_Desc = "command = the command to run: checkout, tag, pack, etc"
   cfgfile_Desc = "cfgfile = the configuration file with all the settings"
-  usage = "usage %prog [options] command cfgfile" + "\n\n" + command_Desc + "\n" + cfgfile_Desc
-  parser = OptionParser(usage, version="%prog, version " + BuddyVersion())
-  parser.add_option("--top", action="store_false", help=SUPPRESS_HELP)
-  parser.add_option("--sources", action="store_false", help=SUPPRESS_HELP)
-  parser.add_option("--tarballs", action="store_false", help=SUPPRESS_HELP)
-  parser.add_option("--collection", action="store_false", help=SUPPRESS_HELP)
-  parser.add_option("-q", "--quiet", action="store_true", dest="Quiet",
+  parser = argparse.ArgumentParser(version=BuddyVersion())
+  parser.add_argument("--top", action="store_false")
+  parser.add_argument("--sources", action="store_false")
+  parser.add_argument("--tarballs", action="store_false")
+  parser.add_argument("--collection", action="store_false")
+  parser.add_argument("-q", "--quiet", action="store_true", dest="Quiet",
                     default=False,
                     help="don't print any diagnostic or error messages")
-  parser.add_option("-b", "--babble", action="store_true", dest="Verbose",
+  parser.add_argument("-b", "--babble", action="store_true", dest="Verbose",
                     default=False,
                     help="print all messages")
-  parser.add_option("-d", "--dry-run", action="store_true", dest="dryrun",
+  parser.add_argument("-d", "--dry-run", action="store_true", dest="dryrun",
                     default=False,
                     help="don't execute; only show what would be done")
-  parser.add_option("-k", "--keep-going", action="store_true", dest="keepgoing",
+  parser.add_argument("-k", "--keep-going", action="store_true", dest="keepgoing",
                     default=False,
                     help="keep processing even if an abnormal (but not fatal) condition is encountered")
-  parser.add_option("--projects", dest="ProjectList",
+  parser.add_argument("--projects", dest="ProjectList",
                     help="a list of projects (comma-separated) on which to execute the command. By default, all the projects in the configfile will be used.")
-  parser.add_option("--logFile", dest="LogFile",
+  parser.add_argument("--logFile", dest="LogFile",
                     help="the name of a file for logging the runtime information. "
                     "Specify a fullpath else the file will be written into the current working directory as \"command\".log")
-  (options, args) = parser.parse_args()
-
-### Sanity Check Command Line Arguments
-  if len(args) != 2:
-    parser.error("Must supply the command and cffile arguments")
+  parser.add_argument('command')
+  parser.add_argument('cfgfile')
+  options = parser.parse_args()
 
   initLogging(options)
 
-  command = args[0]
+  command = options.command
   if not verifyCommand(command):
     fail('available commands are:', commandList())
 
@@ -78,7 +75,7 @@ def main():
   cfParser = ConfigParser.SafeConfigParser()
   cfParser.optionxform = str
 
-  cfgfile = args[1]
+  cfgfile = options.cfgfile
   if not os.path.exists(cfgfile):
     fail("The config file \"" + cfgfile + "\" does not exist")
 
