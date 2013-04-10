@@ -3,8 +3,9 @@
 from buddylist import *
 from buddycheckout import *
 from buddypack import *
+from buddytag import *
+from buddychecksum import *
 
-#
 # Copyright (c) 2012 Allen Winter <winter@kde.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -34,16 +35,21 @@ def buddy_doit(command, options, project, branch, version):
     if not os.path.exists(options.Sources):
       MakeDir(options, options.Sources, command)
     return buddy_checkout(options, project, branch)
-  
+
   elif command == "pack":
     if not os.path.exists(options.Tarballs):
       MakeDir(options, options.Tarballs, command)
     return buddy_pack(options, project, version)
+
+  elif command == "tag":
+    return buddy_tag(options, project, branch, version)
+
+  elif command == "checksum":
+    return buddy_checksum(options, project, version)
+
+  elif command == "checksums":
+    return buddy_checksums(options, project, version)
   
-  elif command == "createtag":
-    fail("Sorry, the createtag command is not implemented yet.")
-  elif command == "pushtag":
-    fail("Sorry, the pushtag command is not implemented yet.")
   else:
     fail("There is no such command \"" + command + "\" available.")
 

@@ -24,11 +24,12 @@ import subprocess
 import sys
 import ConfigParser
 from buddylogger import *
+import re
 
 def BuddyVersion():
   return "0.91"
 
-COMMANDS= ['list','checkout','pack']
+COMMANDS= ['list','checkout','pack', 'tag', 'checksum', 'checksums']
 def verifyCommand(command):
   if command in COMMANDS:
     return True
@@ -152,3 +153,16 @@ def readComponentVersion(cfparser, section):
   minor = readComponentVersionXYZ(cfparser, section, "Minor", 0, 25)
   patch = readComponentVersionXYZ(cfparser, section, "Patch", 0, 99)
   return major + '.' + minor + '.' + patch
+
+def getSVNRevision():
+  proc=subprocess.Popen(["svn", "info"], stdout=subprocess.PIPE)
+  rev = None
+  while True:
+    line = proc.stdout.readline()
+    if line != '':
+      if line.startswith("Revision:"):
+        m = re.search('^Revision: ([0-9]*).*$', line)
+        rev = m.group(1)
+    else:
+      break
+  return rev

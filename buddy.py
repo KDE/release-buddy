@@ -84,8 +84,9 @@ def main():
   except ConfigParser.MissingSectionHeader:
     fail(cfgfile + ": configFile is not properly formatted")
 
-  BRANCH = cfParser.get("Release", "Branch")
-  VERSION = readComponentVersion(cfParser, "Release")
+  BRANCH = cfParser.get("DEFAULT", "Branch")
+  VERSION = readComponentVersion(cfParser, "DEFAULT")
+  options.svntagurl = cfParser.get("DEFAULT", "SVNTAG")
 
 ### Create the top-level collection directory, if necessary
   try:
@@ -150,6 +151,8 @@ def main():
     Ps = AllPs
     
 ### DoIt!
+  if command == "checksums":
+    buddy_doit(command, options, Ps, BRANCH, VERSION)
   for p in Ps:
     buddy_doit(command, options, p, BRANCH, VERSION)
 
