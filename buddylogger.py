@@ -4,21 +4,37 @@ import logging
 import inspect
 import sys
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 def initLogging(options):
   format="%(asctime)s %(levelname)s:%(message)s"
-  level = logging.INFO
-  if(options.Quiet):
-    level = logging.WARN
-  elif(options.Verbose):
-    level = logging.DEBUG
+  formatter = logging.Formatter(format)
 
-  if(options.LogFile):
-    logging.basicConfig(format=format, filename=options.LogFile, filemode='w', level=level)
-  else:
-    logging.basicConfig(format=format, level=level)
   logging.captureWarnings(True)
+
+  level = logging.INFO
+  try:
+    if(options.Quiet):
+      level = logging.WARN
+    elif(options.Verbose):
+      level = logging.DEBUG
+  except AttributeError:
+    pass
+
+  logger.setLevel(level)
+  try:
+    if(options.LogFile):
+      fh = logging.FileHandler(filename=options.LogFile, mode='w')
+      fh.setLevel(level)
+      fh.setFormatter(formatter)
+      logger.addHandler(fh)
+  except AttributeError:
+    pass
+
+  ch = logging.StreamHandler()
+  ch.setLevel(level)
+  ch.setFormatter(formatter)
+  logger.addHandler(ch)
 
 def _getIndentaion():
   return 0
