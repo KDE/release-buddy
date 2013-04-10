@@ -34,6 +34,7 @@ def main():
   (options, args) = parser.parse_args()
 
 ### Sanity Check Command Line Arguments
+  initLogging(options)
   if len(args) != 1:
     parser.error("Must supply the cffile argument")
 
@@ -115,21 +116,9 @@ Desc=additional themes, widgets, screensavers, sounds, wallpapers, etc for KDE
 Url=%(SVN)s/kde-base-artwork
 Desc=additional themes, widgets, screensavers, sounds, wallpapers, etc for the KDE base system
 
-[Project:kdegames]
-Url=%(SVN)s/kdegames
-Desc=a compilation of various casual desktop games
-
 [Project:kdenetwork]
 Url=%(SVN)s/kdenetwork
 Desc=network applications
-
-[Project:kdesdk]
-Url=%(SVN)s/kdesdk
-Desc=tools for software development
-
-[Project:kdetoys]
-Url=%(SVN)s/kdetoys
-Desc=desktop toys
 
 [Project:kdewebdev]
 Url=%(SVN)s/kdewebdev
