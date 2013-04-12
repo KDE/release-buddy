@@ -151,10 +151,12 @@ def main():
     Ps = AllPs
     
 ### DoIt!
-  if command == "checksums":
+  if command in ["checksums", "upload_all"]:
     buddy_doit(command, options, Ps, BRANCH, VERSION)
-  for p in Ps:
-    buddy_doit(command, options, p, BRANCH, VERSION)
+
+  else:
+    for p in Ps:
+      buddy_doit(command, options, p, BRANCH, VERSION)
 
 ### Log End of Runs
   if command != "list":

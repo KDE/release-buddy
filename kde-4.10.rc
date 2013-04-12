@@ -20,59 +20,57 @@
 
 #default values that can be used like variables
 [DEFAULT]
+Major=4
+Minor=10
+Patch=4 ;patch levels: 80=>beta1, 90=>beta2, 95=>rc1, 97=>rc2
 Git=git@git.kde.org                           ;read-write url
-SVN=svn+ssh://svn.kde.org/home/kde/branches   ;read-write url
+SVN=svn+ssh://svn.kde.org/home/kde/trunk/KDE  ;read-write url
+Branch=KDE/%(Major)s.%(Minor)s
+
+Git=git@git.kde.org                           ;read-write url
+SVNROOT=svn+ssh://svn.kde.org/home/kde        ;read-write url
+SVN=%(SVNROOT)s/branches
+SVNTAG=%(SVNROOT)s/tags/KDE/%(Major)s.%(Minor)s.%(Patch)s
 
 [General]
 #TOP is where you want to store all the checkouts, tarballs and everything
 TOP=/data/buddy
-Collection=kde  ;KDE SC
-
-[Release]
-Major=4
-Minor=10
-Patch=3 ;patch levels: 80=>beta1, 90=>beta2, 95=>rc1, 97=>rc2
-Branch=KDE/%(Major)s.%(Minor)s
+Collection=kde  ;kde for example
+PackerCommand=tar --owner=root --group=root -C -I xz --exclude-vcs --exclude=.git --exclude=.svn -f {name}-{version}.tar.xz {source}
+PackerExtraOptions=
 
 ##################################################################
 ## Below here is a list of all the projects for this collection ##
 ##################################################################
 
 ## Start SVN projects list
+[Project:kde-l10n]
+Url=%(SVN)s/stable/l10n-kde4
+Desc=KDE Translations
+#PackerExtraOptions=--exclude autom4te.cache
+
 [Project:kde-wallpapers]
-Url=%(SVN)s/kde-wallpapers
+Url=%(SVN)s/%(Branch)s/kde-wallpapers
 Desc=wallpaper images
 
 [Project:kdeadmin]
-Url=%(SVN)s/kdeadmin
+Url=%(SVN)s/%(Branch)s/kdeadmin
 Desc=programs that usually only a system administrator might need
 
 [Project:kdeartwork]
-Url=%(SVN)s/kdeartwork
+Url=%(SVN)s/%(Branch)s/kdeartwork
 Desc=additional themes, widgets, screensavers, sounds, wallpapers, etc for KDE
 
 [Project:kde-base-artwork]
-Url=%(SVN)s/kde-base-artwork
+Url=%(SVN)s/%(Branch)s/kde-base-artwork
 Desc=additional themes, widgets, screensavers, sounds, wallpapers, etc for the KDE base system
 
-[Project:kdegames]
-Url=%(SVN)s/kdegames
-Desc=a compilation of various casual desktop games
-
 [Project:kdenetwork]
-Url=%(SVN)s/kdenetwork
+Url=%(SVN)s/%(Branch)s/kdenetwork
 Desc=network applications
 
-[Project:kdesdk]
-Url=%(SVN)s/kdesdk
-Desc=tools for software development
-
-[Project:kdetoys]
-Url=%(SVN)s/kdetoys
-Desc=desktop toys
-
 [Project:kdewebdev]
-Url=%(SVN)s/kdewebdev
+Url=%(SVN)s/%(Branch)s/kdewebdev
 Desc=applications for the Web developer
 
 [Project:oxygen-icons]
@@ -80,13 +78,13 @@ Url=svn://anonsvn.kde.org/home/kde/trunk/kdesupport/oxygen-icons
 Desc=The Oxygen Icon Collection
 
 ## Start Git projects list
-[Project:kde-baseapps]
-Url=%(Git)s:kde-baseapps
-Desc=Collection of applications used for file and Internet browsing.
-
 [Project:kate]
 Url=%(Git)s:kate
 Desc=An advanced editor component which is used in numerous KDE applications requiring a text editing component
+
+[Project:kde-baseapps]
+Url=%(Git)s:kde-baseapps
+Desc=Collection of applications used for file and Internet browsing.
 
 [Project:konsole]
 Url=%(Git)s:konsole
@@ -255,10 +253,6 @@ Desc=Graph Theory IDE
 [Project:step]
 Url=%(Git)s:step
 Desc=Interactive Physics Simulator 
-
-[Project:kdeexamples]
-Url=%(Git)s:kdeexamples
-Desc=A collection of coding examples that provide practical demonstrations of the usage of KDE libraries and app development infrastructure.
 
 [Project:bomber]
 Url=%(Git)s:bomber
@@ -518,7 +512,7 @@ Desc=A multimedia player where the focus is on simplicity, instead of features.
 
 [Project:ffmpegthumbs]
 Url=%(Git)s:ffmpegthumbs
-Desc=KDE Multimedia
+Desc=ffmpeg-based thumbnail creator for video files.
 
 [Project:juk]
 Url=%(Git)s:juk
@@ -526,7 +520,7 @@ Desc=Juk is a jukebox, tagger and music collection manager
 
 [Project:kmix]
 Url=%(Git)s:kmix
-Desc=KDE volume control program
+Desc=KDE Multimedia
 
 [Project:kscd]
 Url=%(Git)s:kscd
@@ -559,6 +553,74 @@ Desc=KDE's Personal Information Management Libraries
 [Project:kdeplasma-addons]
 Url=%(Git)s:kdeplasma-addons
 Desc=All kind of addons to improve your Plasma experience
+
+[Project:cervisia]
+Url=%(Git)s:cervisia
+Desc=KDESDK
+
+[Project:dolphin-plugins]
+Url=%(Git)s:dolphin-plugins
+Desc=Plugins for Dolphin 
+
+[Project:kapptemplate]
+Url=%(Git)s:kapptemplate
+Desc=Factory for the easy creation of KDE/Qt components and programs 
+
+[Project:kcachegrind]
+Url=%(Git)s:kcachegrind
+Desc=GUI to profilers such as Valgrind
+
+[Project:kde-dev-scripts]
+Url=%(Git)s:kde-dev-scripts
+Desc=Scripts and setting files useful during development of KDE software 
+
+[Project:kde-dev-utils]
+Url=%(Git)s:kde-dev-utils
+Desc=Small utilities for developers using KDE/Qt libs/frameworks 
+
+[Project:kdesdk-kioslaves]
+Url=%(Git)s:kdesdk-kioslaves
+Desc=KIO-Slaves 
+
+[Project:kdesdk-strigi-analyzers]
+Url=%(Git)s:kdesdk-strigi-analyzers
+Desc=Analyzer plugins for strigi
+
+[Project:kdesdk-thumbnailers]
+Url=%(Git)s:kdesdk-thumbnailers
+Desc=Plugins for the thumbnailing system
+
+[Project:kompare]
+Url=%(Git)s:kompare
+Desc=Graphical File Differences Tool 
+
+[Project:lokalize]
+Url=%(Git)s:lokalize
+Desc=Computer-aided translation 
+
+[Project:okteta]
+Url=%(Git)s:okteta
+Desc=KDE hex editor for viewing and editing the raw data of files.
+
+[Project:poxml]
+Url=%(Git)s:poxml
+Desc=Translates DocBook XML files using gettext po files
+
+[Project:umbrello]
+Url=%(Git)s:umbrello
+Desc=GUI for diagramming Unified Modelling Language (UML) 
+
+[Project:amor]
+Url=%(Git)s:amor
+Desc=Amusing Misuse of Resources animation that sits on top of the curent window.
+
+[Project:kteatime]
+Url=%(Git)s:kteatime
+Desc=KTeaTime is a handy timer for steeping tea.
+
+[Project:ktux]
+Url=%(Git)s:ktux
+Desc=KTux is a screensaver of outer space, with Tux in a spaceship flying by.
 
 [Project:ark]
 Url=%(Git)s:ark
@@ -600,9 +662,9 @@ Desc=KTimer is a little tool to execute programs after some time.
 Url=%(Git)s:kwallet
 Desc=KDE Wallet Manager is a tool to manage the passwords on your KDE system.
 
-[Project:printer-applet]
-Url=%(Git)s:printer-applet
-Desc=Printer Applet is a system tray utility that shows current print jobs, shows printer warnings and errors.
+[Project:print-manager]
+Url=%(Git)s:print-manager
+Desc=A tool for managing print jobs and printers
 
 [Project:superkaramba]
 Url=%(Git)s:superkaramba
@@ -611,4 +673,3 @@ Desc=SuperKaramba is a tool that allows you to easily create interactive widgets
 [Project:sweeper]
 Url=%(Git)s:sweeper
 Desc=Sweeper helps to clean unwanted traces the user leaves on the system.
-

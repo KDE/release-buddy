@@ -29,7 +29,7 @@ import re
 def BuddyVersion():
   return "0.91"
 
-COMMANDS= ['list','checkout','pack', 'tag', 'checksum', 'checksums']
+COMMANDS= ['list','checkout','pack', 'tag', 'checksum', 'checksums', 'upload', 'upload_all']
 def verifyCommand(command):
   if command in COMMANDS:
     return True
@@ -58,9 +58,6 @@ def printContinuing():
   return "Continuing due to keep-going option\n"
 
 def ChangeDir(options, d):
-  if options.dryrun:
-    return
-
   try:
     os.chdir(d)
   except OSError:
@@ -166,3 +163,17 @@ def getSVNRevision():
     else:
       break
   return rev
+
+def getArchive(options, project, version):
+  ChangeDir(options, options.Tarballs)
+
+  archive = project['name'] + '-' + version + ".tar"
+  if os.path.exists(archive + ".gz"):
+    archive = archive + ".gz"
+  elif os.path.exists(archive + ".bz2"):
+    archive = archive + ".bz2"
+  elif os.path.exists(archive + ".xz"):
+    archive = archive + ".xz"
+  else:
+    fail("Unable to locate tarball for '%s-%s'"%(project['name'],version))
+  return archive

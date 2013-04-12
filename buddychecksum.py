@@ -22,36 +22,26 @@ from buddylib import *
 #
 
 def buddy_checksum(options, project, version):
-  with open(os.path.join(options.Tarballs, project['name'] + "-" + version + ".sha256"), 'w') as f:
-    digest = createChecksum(options, project, version)
+  ChangeDir(options, options.Tarballs)
+  archive = getArchive(options, project, version)
+  with open(os.path.join(options.Tarballs, archive + ".sha256"), 'w') as f:
+    digest = createChecksum(options, archive)
     f.write( digest )
     f.write( "\n" )
 
 def buddy_checksums(options, projects, version):
+  ChangeDir(options, options.Tarballs)
   with open(os.path.join(options.Tarballs, "sha256sums.txt"), 'w') as f:
     for project in projects:
-      digest = createChecksum(options, project, version)
+      archive = getArchive(options, project, version)
+      digest = createChecksum(options, archive)
       f.write( digest )
       f.write( "\n" )
 
 
-def createChecksum(options, project, version):
-  info("Creating checksum for %s"%project['name'])
-  ChangeDir(options, options.Tarballs)
+def createChecksum(options, archive):
+  info("Creating checksum for %s"%archive)
   crypt = hashlib.sha256()
-
-  archive = project['name'] + '-' + version + ".tar"
-  if os.path.exists(archive + ".gz"):
-    archive = archive + ".gz"
-  elif os.path.exists(archive + ".bz2"):
-    archive = archive + ".bz2"
-  elif os.path.exists(archive + ".xz"):
-    archive = archive + ".xz"
-  else:
-    if options.keepgoing == False:
-      fail("Unable to locate tarball for '%s-%s'"%(project['name'],version))
-    else:
-      error("Unable to locate tarball for '%s-%s'"%(project['name'],version))
 
   debug("Calculating...")
   with open( os.path.join(options.Tarballs, archive) ) as f:

@@ -5,6 +5,7 @@ from buddycheckout import *
 from buddypack import *
 from buddytag import *
 from buddychecksum import *
+from buddyupload import *
 
 # Copyright (c) 2012 Allen Winter <winter@kde.org>
 #
@@ -49,6 +50,11 @@ def buddy_doit(command, options, project, branch, version):
 
   elif command == "checksums":
     return buddy_checksums(options, project, version)
+  
+  elif command == "upload":
+  	  return buddy_upload(options, project, version)
+  elif command == "upload_all":
+  	  return buddy_upload_all(options, project, version)
   
   else:
     fail("There is no such command \"" + command + "\" available.")
