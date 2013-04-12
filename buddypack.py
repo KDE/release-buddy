@@ -23,6 +23,8 @@ from buddylib import *
 #
 
 def buddy_pack(options, project, branch):      
+	#TODO: Set versions (see readme from sysadmin/release-tools)
+	#TODO: Remove any stuff that should not be a part of the release (see removestuff from sysadmin/release-tools)
     return package(options, project['name'], project['desc'], branch)
   
 def package(options, name, desc, version):
