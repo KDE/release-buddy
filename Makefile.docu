@@ -1,0 +1,14 @@
+#!/bin/sh
+# Copyright (C) 2007, mueller@kde.org. Released under GPL v2+.
+
+MEINPROC=$(shell kde4-config --prefix)/bin/meinproc4
+#MEINPROC=/opt/kde4/bin/meinproc4
+DOCBOOK_SRC=$(shell find . -type f -path "*doc*index.docbook")
+DOCBOOK_DST=$(patsubst %.docbook, %.cache.bz2, $(DOCBOOK_SRC))
+
+.PHONY: all
+
+%.cache.bz2: %.docbook
+	@$(MEINPROC) --srcdir $(KDOCTOOLS_DIR) --cache $@ $< || echo $(shell dirname $<) >> $(SOURCE_DIR)/FAILED
+
+all: $(DOCBOOK_DST)

@@ -2,6 +2,9 @@
 
 import re
 import shutil
+import multiprocessing
+import string
+import os
 from buddylib import *
 
 #
@@ -22,97 +25,118 @@ from buddylib import *
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
-def buddy_pack(options, project, branch):      
-	#TODO: Set versions (see readme from sysadmin/release-tools)
-	#TODO: Remove any stuff that should not be a part of the release (see removestuff from sysadmin/release-tools)
-    return package(options, project['name'], project['desc'], branch)
-  
-def package(options, name, desc, version):
-  archive = name + '-' + version + ".tar"
+def buddy_pack_all(options, projects, version):
+  prepare_documentation_tools(options)
+  for project in projects:
+    package(options, project['name'], version)
 
-  desc = re.sub('^"', '',desc)
-  desc = re.sub('"$', '',desc)
-  desc = desc.replace('"', '\\\"')
+def buddy_pack(options, project, version):
+  prepare_documentation_tools(options)
+  return package(options, project['name'], version)
 
-  #TODO read the option EXTRA_IGNORES
+def package(options, name, version):
+  if name == 'kde-l10n':
+    return package_l10n(options, name, version)
 
-  #write the CPack configfile for this project
-  cpackcfg = options.Tarballs + os.sep + "CPackConfig.cmake"
-  if not options.dryrun:
-    writeCPackConfig(cpackcfg, name, desc, version, options.Sources)
+  info("Packaging %s-%s"%(name, version))
+  #TODO: Set versions (see readme from sysadmin/release-tools)
 
-  #generate the CPack command line
-  args = createCPackCommand(options)
+  make_dokumentation(options, name)
 
-  #start logging this command
-  info("Begin Packaging " + name)
+  packExecutable = options.packExecutable
+  archive = name + '-' + version + ".tar." + packExecutable 
+  source = name
+  destination = os.path.join(options.Tarballs, archive)
 
-  ChangeDir(options, options.Tarballs)
+  ChangeDir(options, options.Sources)
 
-  #clean possible archive junk left over from previous runs
-  if os.path.exists(archive):
-      os.remove(archive)
-  if os.path.exists(archive + ".bz2"):
-      os.remove(archive + ".bz2")
-  if os.path.exists(archive + ".xz"):
-      os.remove(archive + ".xz")
+  RUNIT(options, options.packCommand.format(source=source, destination=destination), None)
 
-  #run the CPack command
-  RUNIT(options, "cpack", args)
-
-  #CPack doesn't have an LZMA generator, so we must bunzip2 then run xz ourselves.
-  RUNIT(options, "bunzip2", archive + ".bz2")
-  RUNIT(options, "xz", archive)
-
-  #remove the CPack configfile
-  if not options.dryrun:
-    os.remove(cpackcfg)
-
-  #remove CPack temporary files
-  shutil.rmtree("_CPack_Packages", True)
-
-  #finish logging this command
-  info("Packaging Complete")
   info(makeASubLine())
 
-def writeCPackConfig(f, name, desc, version, srcpath):
-  try:
-    of = open(f, "w")
-  except IOError:
-    fail("Unable to write CPackConfig.cmake, \"" + f + "\"")
+def package_l10n(options, name, version):
+  info("Packaging languages for version: %s"%(version))
+  info(makeASubLine())
 
-  of.write("set(CPACK_GENERATOR \"TBZ2\")\n")
-  of.write("set(CPACK_SOURCE_GENERATOR \"TBZ2\")\n")
-  of.write("set(CPACK_PACKAGE_VENDOR \"The KDE Community\")\n")
+def make_dokumentation(options, name):
+  source = options.Sources
+  packageDir = os.path.join(options.Sources, name)
+  threads = multiprocessing.cpu_count() + 1
+  kdocToolsDir = os.path.join(options.Top, "kdocToolsDir")
+  command = options.makeDocumentationCommand.format(source=source, packageDir = packageDir, threads = threads, kdocToolsDir = kdocToolsDir)
+  ChangeDir(options, os.path.join(options.Sources, name))
+  RUNIT(options, command, None)
 
-  n = version.split('.')[0]
-  of.write("set(CPACK_PACKAGE_VERSION_MAJOR " + n + ")\n")
-  n = version.split('.')[1]
-  of.write("set(CPACK_PACKAGE_VERSION_MINOR " + n + ")\n")
-  n = version.split('.')[2]
-  of.write("set(CPACK_PACKAGE_VERSION_PATCH " + n + ")\n")
+def prepare_documentation_tools(options):
+  # Locate include dirs
+  searchPaths = options.qtSearchPath
+  fileNames = ["QCoreApplication", "QDebug", "QDir", "QFile", "QIODevice", "QList", "QPair", "QRegExp", "QStringList", "QTextStream"]
+  includePaths = []
+  for fileName in fileNames:
+    path = findDir(fileName, searchPaths)
+    if path not in includePaths:
+      includePaths.append( path )
 
-  of.write("set(CPACK_PACKAGE_VERSION "
-            "\"${CPACK_PACKAGE_VERSION_MAJOR}."
-            "${CPACK_PACKAGE_VERSION_MINOR}."
-            "${CPACK_PACKAGE_VERSION_PATCH}\")\n")
+  # locate docbook locations
+  searchPaths = options.docbookSearchPaths
+  fileName = "catalog.xml"
+  content = "XML Catalog data for DocBook XML V4.2"
+  docbookLocation = findDir(fileName, searchPaths, content)
 
-  of.write("set(CPACK_IGNORE_FILES \"/\\\\.git/\" \"/\\\\.gitignore\" \"/\\\\.svn/\"")
-  of.write(" ${EXTRA_IGNORES})\n")
+  fileName = "VERSION.xsl"
+  content = "XSL Stylesheets"
+  docbookXslLocation = findDir(fileName, searchPaths, content)
 
-  of.write("set(CPACK_PACKAGE_NAME \"" + name + "\")\n")
-  of.write("set(CPACK_PACKAGE_DESCRIPTION \"" + desc + "\")\n")
+  # Copy kdocToolsDir
+  kdocToolsDir = os.path.join(options.Top, "kdocToolsDir")
+  if not os.path.exists(os.path.join( options.Sources, "kdelibs", "kdoctools" ) ):
+    fail("kdelibs must be in the sources directory (%s)"%options.Sources)
+  RUNIT(options, "rm -rf {kdocToolsDir}".format(kdocToolsDir=kdocToolsDir), None)
+  RUNIT(options, "cp -R {kdoctools} {kdocToolsDir}".format(kdoctools = os.path.join(options.Sources, "kdelibs", "kdoctools"), kdocToolsDir = kdocToolsDir), None)
+  RUNIT(options, "cp {buddyDir}/Makefile.docu {sources}".format(sources=options.Sources, buddyDir=options.buddyDir), None)
 
-  of.write("set(CPACK_INSTALLED_DIRECTORIES \"")
-  of.write(srcpath + os.sep + name)
-  of.write(";.\")\n")
+  # Create the helper
+  cppFlags = " -I" + " -I".join( includePaths )
+  ldFlags = " -lQtCore"
+  ChangeDir(options, kdocToolsDir)
+  RUNIT(options, options.compileDocbookHelperCommand.format(cppFlags=cppFlags, kdocToolsDir=".", ldFlags=ldFlags), None)
 
-  of.write("set(CPACK_PACKAGE_FILE_NAME \"${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}\")\n")
+  # Prepare the cmake files
+  replaceInFile(options, "@DOCBOOKXML_CURRENTDTD_DIR@", "{docbookLocation}".format(docbookLocation=docbookLocation), "{kdocToolsDir}/customization/dtd/kdex.dtd.cmake".format(kdocToolsDir=kdocToolsDir), '{kdocToolsDir}/customization/dtd/kdex.dtd'.format(docbookLocation=docbookLocation, kdocToolsDir=kdocToolsDir))
+  replaceInFile(options, "@DOCBOOKXSL_DIR@", "{docbookXslLocation}".format(docbookXslLocation=docbookXslLocation), "{kdocToolsDir}/customization/kde-include-common.xsl.cmake".format(kdocToolsDir=kdocToolsDir), '{kdocToolsDir}/customization/kde-include-common.xsl'.format(docbookXslLocation=docbookXslLocation, kdocToolsDir=kdocToolsDir))
+  replaceInFile(options, "@DOCBOOKXSL_DIR@", "{docbookXslLocation}".format(docbookXslLocation=docbookXslLocation), "{kdocToolsDir}/customization/kde-include-man.xsl.cmake".format(kdocToolsDir=kdocToolsDir), '{kdocToolsDir}/customization/kde-include-man.xsl'.format(docbookXslLocation=docbookXslLocation, kdocToolsDir=kdocToolsDir))
 
-  of.close()
+  # Run the helper
+  RUNIT(options, "{kdocToolsDir}/docbookl10nhelper {docbookXslLocation} {kdocToolsDir}/customization/xsl/ {kdocToolsDir}/customization/xsl/".format(docbookXslLocation=docbookXslLocation, kdocToolsDir=kdocToolsDir), None)
 
-def createCPackCommand(options):
-  args = "-G TBZ2"
-  if options.Verbose:
-    args = args + " --verbose"
-  return args
+def findDir(filename, search_path, content = None):
+  file_found = 0
+  paths = string.split(search_path, os.path.pathsep)
+  for path in paths:
+    if os.path.exists(os.path.join(path, filename)):
+      if content is None or fileContains(os.path.join(path, filename), content):
+        file_found = 1
+        break
+  if file_found:
+    return os.path.abspath(path)
+  else:
+    return None
+
+def fileContains(fileName, content):
+  for line in open(fileName):
+    if content in line:
+      return True
+  return False
+
+def replaceInFile(options, searchString, replaceString, srcFileName, destFileName):
+  debug("Replacing %s in %s with %s to %s"%(searchString, srcFileName, replaceString, destFileName) )
+  srcFile = open(srcFileName, 'r')
+  destFile = open(destFileName, 'w')
+  
+  for line in srcFile:
+    if searchString in line:
+      line = string.replace(line, searchString, replaceString)
+    if not options.dryrun:
+      destFile.write(line)
+  srcFile.close()
+  destFile.close()

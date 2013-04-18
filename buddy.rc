@@ -1,0 +1,20 @@
+[DEFAULT]
+tarExecutable=tar
+tarOptions=--owner=root --group=root -c --exclude-vcs
+packExecutable=xz
+packOptions=
+makeExecutable=make
+cppExecutable=g++
+qtSearchPath=/usr/include/QtCore:/usr/include/qt4/QtCore::/usr/include/Qt:/usr/include/qt4:/usr/include/QtXml:/usr/include/qt4/QtXml
+docbookSearchPaths=/usr/share/xml/docbook/schema/dtd/4.2/:/usr/share/xml/docbook/stylesheet/nwalsh/current/:/usr/share/xml/docbook/stylesheet/nwalsh/
+
+[Buddy]
+#TOP is where you want to store all the checkouts, tarballs and everything
+TOP=/code/kde/tmp/buddy
+
+
+[Pack]
+packCommand=%(tarExecutable)s %(tarOptions)s %(extraExclude)s -I %(packExecutable)s -f {destination} {source}
+extraExclude=
+makeDocumentationCommand=%(makeExecutable)s -k -f {source}/Makefile.docu -j{threads} SOURCE_DIR={packageDir} KDOCTOOLS_DIR={kdocToolsDir}
+compileDocbookHelperCommand=%(cppExecutable)s {cppFlags} {kdocToolsDir}/docbookl10nhelper.cpp {ldFlags} -o {kdocToolsDir}/docbookl10nhelper

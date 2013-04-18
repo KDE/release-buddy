@@ -37,10 +37,13 @@ def buddy_doit(command, options, project, branch, version):
       MakeDir(options, options.Sources, command)
     return buddy_checkout(options, project, branch)
 
-  elif command == "pack":
+  elif command == "pack" or command == "pack_all":
     if not os.path.exists(options.Tarballs):
       MakeDir(options, options.Tarballs, command)
-    return buddy_pack(options, project, version)
+    if command == "pack":
+      return buddy_pack(options, project, version)
+    else:
+      return buddy_pack_all(options, project, version)
 
   elif command == "tag":
     return buddy_tag(options, project, branch, version)

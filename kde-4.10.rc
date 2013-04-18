@@ -26,18 +26,13 @@ Patch=4 ;patch levels: 80=>beta1, 90=>beta2, 95=>rc1, 97=>rc2
 Git=git@git.kde.org                           ;read-write url
 SVN=svn+ssh://svn.kde.org/home/kde/trunk/KDE  ;read-write url
 Branch=KDE/%(Major)s.%(Minor)s
-
 Git=git@git.kde.org                           ;read-write url
 SVNROOT=svn+ssh://svn.kde.org/home/kde        ;read-write url
 SVN=%(SVNROOT)s/branches
 SVNTAG=%(SVNROOT)s/tags/KDE/%(Major)s.%(Minor)s.%(Patch)s
 
 [General]
-#TOP is where you want to store all the checkouts, tarballs and everything
-TOP=/data/buddy
 Collection=kde  ;kde for example
-PackerCommand=tar --owner=root --group=root -C -I xz --exclude-vcs --exclude=.git --exclude=.svn -f {name}-{version}.tar.xz {source}
-PackerExtraOptions=
 
 ##################################################################
 ## Below here is a list of all the projects for this collection ##

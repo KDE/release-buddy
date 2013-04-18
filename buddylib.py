@@ -21,6 +21,7 @@
 import datetime
 import os
 import subprocess
+import shlex
 import sys
 import ConfigParser
 from buddylogger import *
@@ -29,7 +30,7 @@ import re
 def BuddyVersion():
   return "0.91"
 
-COMMANDS= ['list','checkout','pack', 'tag', 'checksum', 'checksums', 'upload', 'upload_all']
+COMMANDS= ['list','checkout','pack', 'pack_all', 'tag', 'checksum', 'checksums', 'upload', 'upload_all']
 def verifyCommand(command):
   if command in COMMANDS:
     return True
@@ -83,27 +84,27 @@ def LoggerClear(options):
     except OSError:
       fail("logfile \"" + options.LogFile + "\" cannot be removed")
 
-def RUNIT(options, cmd, args):
+def RUNIT(options, cmd, args=None, shell=False):
   if args:
     cmd = cmd + " " + args
 
   if options.dryrun:
     info("Dry Run: " + cmd)
     if cmd.find("kde-checkout-list") != -1 and cmd.find("--dry-run") != -1:
-       subprocess.call(cmd.split(' '))
+       subprocess.call(shlex.split(cmd), shell=shell)
     return
 
-  info("==> Start Run: " + cmd)
+  info("==> Start Run: " + str(shlex.split(cmd)))
   info("Working Dir: " + os.getcwd())
   startUTC = nowUTC()
   info("Start Time: " + dtStrUTC(startUTC))
 
   if options.Quiet:
     nf = open(os.devnull, 'w')
-    stat = subprocess.call(cmd.split(' '), stdout=nf, stderr=nf)
+    stat = subprocess.call(shlex.split(cmd), stdout=nf, stderr=nf, shell=shell)
     nf.close()
   else:
-    stat = subprocess.call(cmd.split(' '))
+    stat = subprocess.call(shlex.split(cmd), shell=shell)
 
   info("<== End Run: ")
   if stat:

@@ -79,18 +79,29 @@ def main():
   if not os.path.exists(cfgfile):
     fail("The config file \"" + cfgfile + "\" does not exist")
 
-  try:
-    cfParser.read(cfgfile)
-  except ConfigParser.MissingSectionHeader:
-    fail(cfgfile + ": configFile is not properly formatted")
+  for confFile in ['buddy.rc', cfgfile]:
+    try:
+      cfParser.read(['buddy.rc', cfgfile])
+    except ConfigParser.MissingSectionHeader:
+      fail(cfgfile + ": configFile is not properly formatted")
 
   BRANCH = cfParser.get("DEFAULT", "Branch")
   VERSION = readComponentVersion(cfParser, "DEFAULT")
   options.svntagurl = cfParser.get("DEFAULT", "SVNTAG")
+  options.tarExecutable = cfParser.get("DEFAULT", "tarExecutable")
+  options.tarOptions = cfParser.get("DEFAULT", "tarOptions")
+  options.packExecutable = cfParser.get("DEFAULT", "packExecutable")
+  options.packOptions = cfParser.get("DEFAULT", "packOptions")
+  options.packCommand = cfParser.get("Pack", "packCommand")
+  options.makeDocumentationCommand = cfParser.get("Pack", "makeDocumentationCommand")
+  options.qtSearchPath = cfParser.get("DEFAULT", "qtSearchPath")
+  options.docbookSearchPaths = cfParser.get("DEFAULT", "docbookSearchPaths")
+  options.compileDocbookHelperCommand = cfParser.get("Pack", "compileDocbookHelperCommand")
+  options.buddyDir = os.getcwd()
 
 ### Create the top-level collection directory, if necessary
   try:
-    options.Top = cfParser.get("General","TOP")
+    options.Top = cfParser.get("Buddy","TOP")
   except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
     fail("ConfigFile is missing a section called \"General\" with a \"TOP\" setting")
 
@@ -151,7 +162,7 @@ def main():
     Ps = AllPs
     
 ### DoIt!
-  if command in ["checksums", "upload_all"]:
+  if command in ["checksums", "upload_all", "pack_all"]:
     buddy_doit(command, options, Ps, BRANCH, VERSION)
 
   else:

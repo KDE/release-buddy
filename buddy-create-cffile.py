@@ -82,18 +82,19 @@ def main():
 '''
 #default values that can be used like variables
 [DEFAULT]
+Major=x
+Minor=y
+Patch=z ;patch levels: 80=>beta1, 90=>beta2, 95=>rc1, 97=>rc2
 Git=git@git.kde.org                           ;read-write url
 SVN=svn+ssh://svn.kde.org/home/kde/trunk/KDE  ;read-write url
+Branch=KDE/%(Major)s.%(Minor)s
+Git=git@git.kde.org                           ;read-write url
+SVNROOT=svn+ssh://svn.kde.org/home/kde        ;read-write url
+SVN=%(SVNROOT)s/branches
+SVNTAG=%(SVNROOT)s/tags/KDE/%(Major)s.%(Minor)s.%(Patch)s
 
 [General]
-#TOP is where you want to store all the checkouts, tarballs and everything
-TOP=/data/buddy
-Collection=foo  ;kde for example
-
-[Release]
-Major=X
-Minor=Y
-Patch=Z ;patch levels: 80=>beta1, 90=>beta2, 95=>rc1, 97=>rc2
+Collection=kde  ;kde for example
 
 ##################################################################
 ## Below here is a list of all the projects for this collection ##
