@@ -3,6 +3,7 @@
 # Part of Release Buddy: Use kde-checkout-list to create a Buddy configfile
 
 # Copyright (c) 2012 Allen Winter <winter@kde.org>
+# Copyright (c) 2013 Torgny Nyblom <nyblom@kde.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -101,6 +102,10 @@ Collection=kde  ;kde for example
 ##################################################################
 
 ## Start SVN projects list
+[Project:kde-l10n]
+Url=%(SVN)s/stable/l10n-kde4
+Desc=KDE Translations
+
 [Project:kde-wallpapers]
 Url=%(SVN)s/kde-wallpapers
 Desc=wallpaper images

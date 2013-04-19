@@ -42,7 +42,6 @@ Collection=kde  ;kde for example
 [Project:kde-l10n]
 Url=%(SVN)s/stable/l10n-kde4
 Desc=KDE Translations
-#PackerExtraOptions=--exclude autom4te.cache
 
 [Project:kde-wallpapers]
 Url=%(SVN)s/%(Branch)s/kde-wallpapers

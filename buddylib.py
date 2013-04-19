@@ -2,6 +2,7 @@
 
 #
 # Copyright (c) 2012 Allen Winter <winter@kde.org>
+# Copyright (c) 2013 Torgny Nyblom <nyblom@kde.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -65,8 +66,10 @@ def ChangeDir(options, d):
     fail("Unable to navigate to the directory \"" + d + "\"")
 
 def MakeDir(options, d, type):
-  info("Create " + type + " directory : " + d + "\n")
+  info("Create " + type + " directory : " + d)
   if options.dryrun:
+    return
+  if os.path.exists(d) and os.path.isdir(d):
     return
 
   try:

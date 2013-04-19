@@ -9,6 +9,7 @@ from buddylib import *
 
 #
 # Copyright (c) 2012 Allen Winter <winter@kde.org>
+# Copyright (c) 2013 Torgny Nyblom <nyblom@kde.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -56,6 +57,24 @@ def package(options, name, version):
 
 def package_l10n(options, name, version):
   info("Packaging languages for version: %s"%(version))
+  packExecutable = options.packExecutable
+  ChangeDir(options, os.path.join(options.Sources, name))
+  with open('subdirs', 'r') as f:
+    for lang in f:
+      lang = lang.strip()
+      # Enable when the list of official languages are in the kde-l10n module
+      #if not fileContains('language_list', lang):
+      #  info("Skipping {lang}, it does not meet the release criteria".format(lang=lang))
+      #  continue
+
+      RUNIT(options, "bash scripts/autogen.sh " + lang, None)
+      archive = name + "-" + lang + '-' + version + ".tar." + packExecutable 
+      destination = os.path.join(options.Tarballs, name, archive)
+
+      ChangeDir(options, os.path.join(options.Sources, name))
+      MakeDir(options, os.path.join(options.Tarballs, name), "Sources")
+      RUNIT(options, options.packCommand.format(source=lang, destination=destination), None)
+
   info(makeASubLine())
 
 def make_dokumentation(options, name):

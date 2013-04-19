@@ -8,6 +8,7 @@ from buddychecksum import *
 from buddyupload import *
 
 # Copyright (c) 2012 Allen Winter <winter@kde.org>
+# Copyright (c) 2013 Torgny Nyblom <nyblom@kde.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

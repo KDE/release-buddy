@@ -4,6 +4,7 @@ from buddylib import *
 
 #
 # Copyright (c) 2012 Allen Winter <winter@kde.org>
+# Copyright (c) 2013 Torgny Nyblom <nyblom@kde.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,8 +32,8 @@ def git_update(options, name, url, branch):
 
   ChangeDir(options, options.Sources)
   if not os.path.exists(name):
-    RUNIT(options, "git", "clone " + url + " " + name)
-  elif os.path.exists(name + os.sep + ".git"):
+    RUNIT(options, "git", "clone " + url + " " + name + " " + name)
+  elif os.path.exists(dest + os.sep + ".git"):
     os.chdir(name)
     RUNIT(options, "git", "reset --hard")
     RUNIT(options, "git", "clean -f -d -x")
@@ -51,7 +52,7 @@ def svn_update(options, name, url):
 
   ChangeDir(options, options.Sources)
   if not os.path.exists(name):
-    RUNIT(options, "svn", "checkout " + url)
+    RUNIT(options, "svn", "checkout " + url + " " + name)
   elif os.path.exists(name + os.sep + ".svn"):
     RUNIT(options, "svn", "cleanup " + name)
     RUNIT(options, "svn", "update " + name)
