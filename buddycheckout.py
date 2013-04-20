@@ -1,7 +1,4 @@
 # Part of Release Buddy: Checkout Command
-
-from buddylib import *
-
 #
 # Copyright (c) 2012 Allen Winter <winter@kde.org>
 # Copyright (c) 2013 Torgny Nyblom <nyblom@kde.org>
@@ -20,6 +17,8 @@ from buddylib import *
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
+
+from buddylib import *
 
 def buddy_checkout(options, project, branch):
   if project['url'].startswith("svn"):
@@ -55,6 +54,7 @@ def svn_update(options, name, url):
     RUNIT(options, "svn", "checkout " + url + " " + name)
   elif os.path.exists(name + os.sep + ".svn"):
     RUNIT(options, "svn", "cleanup " + name)
+    RUNIT(options, "svn", "relocate " + url + " " + name)
     RUNIT(options, "svn", "update " + name)
   else:
     warning(options, name + " exists and is not a SVN checkout!")
