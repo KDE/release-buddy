@@ -107,31 +107,31 @@ Url=%(SVN)s/stable/l10n-kde4
 Desc=KDE Translations
 
 [Project:kde-wallpapers]
-Url=%(SVN)s/kde-wallpapers
+Url=%(SVN)s/%(Branch)s/kde-wallpapers
 Desc=wallpaper images
 
 [Project:kdeadmin]
-Url=%(SVN)s/kdeadmin
+Url=%(SVN)s/%(Branch)s/kdeadmin
 Desc=programs that usually only a system administrator might need
 
 [Project:kdeartwork]
-Url=%(SVN)s/kdeartwork
+Url=%(SVN)s/%(Branch)s/kdeartwork
 Desc=additional themes, widgets, screensavers, sounds, wallpapers, etc for KDE
 
 [Project:kde-base-artwork]
-Url=%(SVN)s/kde-base-artwork
+Url=%(SVN)s/%(Branch)s/kde-base-artwork
 Desc=additional themes, widgets, screensavers, sounds, wallpapers, etc for the KDE base system
 
 [Project:kdenetwork]
-Url=%(SVN)s/kdenetwork
+Url=%(SVN)s/%(Branch)s/kdenetwork
 Desc=network applications
 
 [Project:kdewebdev]
-Url=%(SVN)s/kdewebdev
+Url=%(SVN)s/%(Branch)s/kdewebdev
 Desc=applications for the Web developer
 
 [Project:oxygen-icons]
-Url=svn://anonsvn.kde.org/home/kde/trunk/kdesupport/oxygen-icons
+Url=%(SVN)/%(Branch)s/oxygen-icons
 Desc=The Oxygen Icon Collection
 
 ## Start Git projects list
