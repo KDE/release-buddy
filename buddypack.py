@@ -1,12 +1,4 @@
 # Part of Release Buddy: Package Command
-
-import re
-import shutil
-import multiprocessing
-import string
-import os
-from buddylib import *
-
 #
 # Copyright (c) 2012 Allen Winter <winter@kde.org>
 # Copyright (c) 2013 Torgny Nyblom <nyblom@kde.org>
@@ -25,6 +17,14 @@ from buddylib import *
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
+
+import re
+import shutil
+import multiprocessing
+import string
+import os
+from buddylib import *
+
 
 def buddy_pack_all(options, projects, version):
   prepare_documentation_tools(options)
@@ -62,10 +62,9 @@ def package_l10n(options, name, version):
   with open('subdirs', 'r') as f:
     for lang in f:
       lang = lang.strip()
-      # Enable when the list of official languages are in the kde-l10n module
-      #if not fileContains('language_list', lang):
-      #  info("Skipping {lang}, it does not meet the release criteria".format(lang=lang))
-      #  continue
+      if not fileContains( os.path.join( options.buddyDir, 'language_list'), lang):
+        info("Skipping {lang}, it does not meet the release criteria".format(lang=lang))
+        continue
 
       RUNIT(options, "bash scripts/autogen.sh " + lang, None)
       archive = name + "-" + lang + '-' + version + ".tar." + packExecutable 
