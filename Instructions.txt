@@ -1,5 +1,7 @@
 ## Release Buddy
 
+ __TODO_ fail if wrong branch in any stage.
+
 #### Prep
 
 * Check bugzilla for showstoppers
@@ -49,8 +51,6 @@
   in your current working dir, but you can change the logfile with the 
   "--logFile=/path/to/logfile" option.
 
-* __TODO__ switch to the KDE/Major.Minor branch as needed for SVN
-
 #### Make changes to the repos as needed, for example:
 
 * This is a the hard part. There are lots of tweaks to make now, for instance:
@@ -68,33 +68,22 @@
   * kdepim/CMakeLists.txt (KDEPIM_DEV_VERSION / KDEPIM_VERSION)
   * kdepim-runtime/CMakeLists (KDEPIM_RUNTIME_DEV_VERSION and KDEPIM_RUNTIME_VERSION)
   * for koffice: configure.in.in, lib/kofficecore/kofficeversion.h, etc.
-  * common and versions scripts
 
-  Create index.cache.bz2 files for all docbooks
+  fixuifiles __TODO__ Needed? Not done in the release-tools scripts
 
-  % meinproc4 --cache index.cache.bz2 index.docbook
-
-  __TODO__  Make a setting for MEINPROC in the buddy configfile?
-            Use the meinproc for the major release... so when bootstrapping to the next major release
-            we'll have a problem maybe... ie. use meinproc5 when going to 5.0.0pre
-
-  fixuifiles
-
-  Update kdepackages in kdelibs/kdeui
+  Update kdepackages in kdelibs/kdeui __TODO__ Needed? Not done in the release-tools scripts
 
   In the stable branch, remove the MALLOC_CHECK_ block from kdebase/workspace/startkde.cmake
 
-#### Create tags (but don't push tags)
-  
-* __TODO__ Use buddy createtag
-
-* __TODO__ Ensure clean repos??
+#### Create tags (and push tags)
 
 * buddy createtag makes a tag for each project with the name "vVERSION"
 
-* The tag is created from the current branch. __TODO_ switch to branch KDE/Major.Minor as needed.
+* The tag is created from the current branch.
 
-* At this point the tags __ARE NOT PUSHED__
+* Push the tags
+
+* At this point the tags __ARE PUSHED__
 
 #### Create tarball
 
@@ -103,33 +92,17 @@
 
         % buddy pack kde-4.9.rc
 
-* __TODO__ currently pack uses CPack.  Let's dump that.
-
-* __TODO__ Ensure clean repos??
-
-* basically we want to 
-  
-  % (cd kde-VERSION/project; tar Jcvf kde-VERSION/tarballs/project-VERSION.tar.xz --exclude .git|.svn .)
-
 #### Do a final testbuild
 
 * Use mjansen's build-tool?
 
 #### Upload for Packager testing
 
-* __TODO__ Let's write a program that ftp's the test tarballs to incoming.kde.org
-
 * run sha256sum *.xz and put that info in the sysadmin bug report when
   the request to move them from incoming to the final place is made.
 
   *Note:* the sysadmins run sha256sum -c to validate the .xz files
   before moving them from /incoming to the final place
-
-#### Push the Tags
-
-* Push the tags after a few days of packager testing. (do we need to wait longer?)
-
-* __TODO__ Write buddy pushtags command for this task
 
 #### kdelibs
 
@@ -138,10 +111,6 @@
   As dfaure says: "I'm opposed to new branches to maintain. Switching to
   "bugfixes in 4.8" to "bugfixes in 4.9, 4.8 is dead" doesn't increase the
   number of branches to maintain, so that's fine."
-
-#### kde-l10n?
-
-* __TODO__
 
 #### Branching
 
