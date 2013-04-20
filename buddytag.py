@@ -31,9 +31,10 @@ def git_tag(options, name, url, version):
   info("Begin Git Tag for " + name + ", using version: " + version)
 
   ChangeDir(options, os.path.join(options.Sources, name))
+  RUNIT(options, "git", "clean -f -d -x")
   RUNIT(options, "git", "tag -m'%s' v%s"%(version,version))
   RUNIT(options, "git", "push --tags")
-  
+
   info("Tagging Complete")
   info(makeASubLine())
 
