@@ -32,7 +32,7 @@ def git_update(options, name, url, branch):
   ChangeDir(options, options.Sources)
   if not os.path.exists(name):
     RUNIT(options, "git", "clone " + url + " " + name + " " + name)
-  elif os.path.exists(dest + os.sep + ".git"):
+  elif os.path.exists(name + os.sep + ".git"):
     os.chdir(name)
     RUNIT(options, "git", "reset --hard")
     RUNIT(options, "git", "clean -f -d -x")
