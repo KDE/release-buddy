@@ -32,7 +32,7 @@ from buddycommands import buddy_doit
 def main():
 
 ### Parse Command Line
-  command_Desc = "command = the command to run: checkout, tag, pack, etc"
+  command_Desc = "command = the command to run one of: %s"%COMMANDS
   cfgfile_Desc = "cfgfile = the configuration file with all the settings"
   parser = argparse.ArgumentParser(version=BuddyVersion())
   parser.add_argument("--top", action="store_false")
@@ -56,8 +56,9 @@ def main():
   parser.add_argument("--logFile", dest="LogFile",
                     help="the name of a file for logging the runtime information. "
                     "Specify a fullpath else the file will be written into the current working directory as \"command\".log")
-  parser.add_argument('command')
-  parser.add_argument('cfgfile')
+  parser.add_argument("-r", "--resume", dest="Resume", default=False, action="store_true", help="Resume operations that support it, ex. pack_all")
+  parser.add_argument('command', help=command_Desc)
+  parser.add_argument('cfgfile', help=cfgfile_Desc)
   options = parser.parse_args()
 
   initLogging(options)
@@ -93,7 +94,9 @@ def main():
   options.tarOptions = cfParser.get("DEFAULT", "tarOptions")
   options.packExecutable = cfParser.get("DEFAULT", "packExecutable")
   options.packOptions = cfParser.get("DEFAULT", "packOptions")
+  options.prePackCommand = cfParser.get("Pack", "prePackCommand")
   options.packCommand = cfParser.get("Pack", "packCommand")
+  options.postPackCommand = cfParser.get("Pack", "postPackCommand")
   options.makeDocumentationCommand = cfParser.get("Pack", "makeDocumentationCommand")
   options.qtSearchPath = cfParser.get("DEFAULT", "qtSearchPath")
   options.docbookSearchPaths = cfParser.get("DEFAULT", "docbookSearchPaths")
@@ -166,7 +169,7 @@ def main():
     Ps = AllPs
     
 ### DoIt!
-  if command in ["checksums", "upload_all", "pack_all"]:
+  if command in ["checksums", "upload_all", "pack_all", "versions"]:
     buddy_doit(command, options, Ps, BRANCH, VERSION)
 
   else:

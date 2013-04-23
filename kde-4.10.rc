@@ -22,7 +22,7 @@
 [DEFAULT]
 Major=4
 Minor=10
-Patch=4 ;patch levels: 80=>beta1, 90=>beta2, 95=>rc1, 97=>rc2
+Patch=3 ;patch levels: 80=>beta1, 90=>beta2, 95=>rc1, 97=>rc2
 Git=git@git.kde.org                           ;read-write url
 SVN=svn+ssh://svn.kde.org/home/kde/trunk/KDE  ;read-write url
 Branch=KDE/%(Major)s.%(Minor)s
@@ -38,6 +38,11 @@ Collection=kde  ;kde for example
 ##################################################################
 ## Below here is a list of all the projects for this collection ##
 ##################################################################
+
+[Project:kde-test]
+PrePackCommand=
+Url=None
+Desc=
 
 ## Start SVN projects list
 [Project:kde-l10n]

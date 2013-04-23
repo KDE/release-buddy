@@ -27,16 +27,18 @@ from buddylib import *
 def buddy_upload_all(options, projects, version):
   ftp = _connect(options)
   for project in projects:
-    archive = getArchive(options, project, version)
-    upload(options, ftp, archive, version)
+    archives = getArchive(options, project, version)
+    for archive in archives:
+      upload(options, ftp, archive, version)
   upload(options, ftp, "sha256sums.txt", version)
   _close(ftp)
 
 def buddy_upload(options, project, version):
   ftp = _connect(options)
-  archive = getArchive(options, project, version)
-  upload(options, ftp, archive, version)
-  upload(options, ftp, archive + ".sha256", version)
+  archives = getArchive(options, project, version)
+  for archive in archives:
+    upload(options, ftp, archive, version)
+    upload(options, ftp, archive + ".sha256", version)
   _close(ftp)
 
 def _connect(options):

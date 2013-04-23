@@ -1,6 +1,5 @@
-# Part of Release Buddy: checksum Commands
+# Part of Release Buddy: version Commands
 
-import hashlib
 from buddylib import *
 
 #
@@ -21,7 +20,7 @@ from buddylib import *
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
-def buddy_checksum(options, project, version):
+def buddy_version(options, project):
   ChangeDir(options, options.Tarballs)
   archives = getArchive(options, project, version)
   for archive in archives:
@@ -30,7 +29,7 @@ def buddy_checksum(options, project, version):
       f.write( digest )
       f.write( "\n" )
 
-def buddy_checksums(options, projects, version):
+def buddy_versions(options, projects):
   ChangeDir(options, options.Tarballs)
   with open(os.path.join(options.Tarballs, "sha256sums.txt"), 'w') as f:
     for project in projects:
@@ -41,17 +40,12 @@ def buddy_checksums(options, projects, version):
         f.write( "\n" )
 
 
-def createChecksum(options, archive):
+def getVersion(options, archive):
   info("Creating checksum for %s"%archive)
-  crypt = hashlib.sha256()
 
-  debug("Calculating...")
-  with open( os.path.join(options.Tarballs, archive) ) as f:
-    while True:
-      block = f.read(256)
-      if block == '':
-        break
-      crypt.update(block)
-  digest = crypt.hexdigest()
-  info("checksum: %s"%digest)
-  return "%s %s"%(digest, archive)
+
+def getSvnVersion():
+  pass
+
+def getGitVersion():
+  pass

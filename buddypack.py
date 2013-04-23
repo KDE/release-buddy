@@ -51,16 +51,22 @@ def package(options, name, version):
   info("Packaging %s-%s"%(name, version))
   #TODO: Set versions (see readme from sysadmin/release-tools)
 
-  make_dokumentation(options, name)
-
   packExecutable = options.packExecutable
   archive = name + '-' + version + ".tar." + packExecutable 
   source = name
   destination = os.path.join(options.Tarballs, archive)
 
+  if options.Resume and os.path.exists(destination):
+    info("Resume specified and tarball exists, skipping.")
+    return
+
+  make_dokumentation(options, name)
+
   ChangeDir(options, options.Sources)
 
-  RUNIT(options, options.packCommand.format(source=source, destination=destination), None)
+  RUNIT(options, options.prePackCommand.format(source = source, version = version))
+  RUNIT(options, options.packCommand.format(source=source + "-" + version, destination=destination))
+  RUNIT(options, options.postPackCommand.format(source = source, version = version))
 
   info(makeASubLine())
 
@@ -71,17 +77,23 @@ def package_l10n(options, name, version):
   with open('subdirs', 'r') as f:
     for lang in f:
       lang = lang.strip()
+
+      archive = name + "-" + lang + '-' + version + ".tar." + packExecutable 
+      destination = os.path.join(options.Tarballs, name, archive)
+
+      if options.Resume and os.path.exists(destination):
+        info("Resume specified and tarball exists, skipping.")
+        continue
+
       if not fileContains( os.path.join( options.buddyDir, 'language_list'), lang):
         info("Skipping {lang}, it does not meet the release criteria".format(lang=lang))
         continue
 
-      RUNIT(options, "bash scripts/autogen.sh " + lang, None)
-      archive = name + "-" + lang + '-' + version + ".tar." + packExecutable 
-      destination = os.path.join(options.Tarballs, name, archive)
+      RUNIT(options, "bash scripts/autogen.sh " + lang)
 
       ChangeDir(options, os.path.join(options.Sources, name))
       MakeDir(options, os.path.join(options.Tarballs, name), "Sources")
-      RUNIT(options, options.packCommand.format(source=lang, destination=destination), None)
+      RUNIT(options, options.packCommand.format(source=lang, destination=destination))
 
   info(makeASubLine())
 
@@ -92,7 +104,7 @@ def make_dokumentation(options, name):
   kdocToolsDir = os.path.join(options.Top, "kdocToolsDir")
   command = options.makeDocumentationCommand.format(source=source, packageDir = packageDir, threads = threads, kdocToolsDir = kdocToolsDir)
   ChangeDir(options, os.path.join(options.Sources, name))
-  RUNIT(options, command, None)
+  RUNIT(options, command)
 
 def prepare_documentation_tools(options):
   # Locate include dirs
@@ -118,15 +130,15 @@ def prepare_documentation_tools(options):
   kdocToolsDir = os.path.join(options.Top, "kdocToolsDir")
   if not os.path.exists(os.path.join( options.Sources, "kdelibs", "kdoctools" ) ):
     fail("kdelibs must be in the sources directory (%s)"%options.Sources)
-  RUNIT(options, "rm -rf {kdocToolsDir}".format(kdocToolsDir=kdocToolsDir), None)
-  RUNIT(options, "cp -R {kdoctools} {kdocToolsDir}".format(kdoctools = os.path.join(options.Sources, "kdelibs", "kdoctools"), kdocToolsDir = kdocToolsDir), None)
-  RUNIT(options, "cp {buddyDir}/Makefile.docu {sources}".format(sources=options.Sources, buddyDir=options.buddyDir), None)
+  RUNIT(options, "rm -rf {kdocToolsDir}".format(kdocToolsDir=kdocToolsDir))
+  RUNIT(options, "cp -R {kdoctools} {kdocToolsDir}".format(kdoctools = os.path.join(options.Sources, "kdelibs", "kdoctools"), kdocToolsDir = kdocToolsDir))
+  RUNIT(options, "cp {buddyDir}/Makefile.docu {sources}".format(sources=options.Sources, buddyDir=options.buddyDir))
 
   # Create the helper
   cppFlags = " -I" + " -I".join( includePaths )
   ldFlags = " -lQtCore"
   ChangeDir(options, kdocToolsDir)
-  RUNIT(options, options.compileDocbookHelperCommand.format(cppFlags=cppFlags, kdocToolsDir=".", ldFlags=ldFlags), None)
+  RUNIT(options, options.compileDocbookHelperCommand.format(cppFlags=cppFlags, kdocToolsDir=".", ldFlags=ldFlags))
 
   # Prepare the cmake files
   replaceInFile(options, "@DOCBOOKXML_CURRENTDTD_DIR@", "{docbookLocation}".format(docbookLocation=docbookLocation), "{kdocToolsDir}/customization/dtd/kdex.dtd.cmake".format(kdocToolsDir=kdocToolsDir), '{kdocToolsDir}/customization/dtd/kdex.dtd'.format(docbookLocation=docbookLocation, kdocToolsDir=kdocToolsDir))
@@ -134,7 +146,7 @@ def prepare_documentation_tools(options):
   replaceInFile(options, "@DOCBOOKXSL_DIR@", "{docbookXslLocation}".format(docbookXslLocation=docbookXslLocation), "{kdocToolsDir}/customization/kde-include-man.xsl.cmake".format(kdocToolsDir=kdocToolsDir), '{kdocToolsDir}/customization/kde-include-man.xsl'.format(docbookXslLocation=docbookXslLocation, kdocToolsDir=kdocToolsDir))
 
   # Run the helper
-  RUNIT(options, "{kdocToolsDir}/docbookl10nhelper {docbookXslLocation} {kdocToolsDir}/customization/xsl/ {kdocToolsDir}/customization/xsl/".format(docbookXslLocation=docbookXslLocation, kdocToolsDir=kdocToolsDir), None)
+  RUNIT(options, "{kdocToolsDir}/docbookl10nhelper {docbookXslLocation} {kdocToolsDir}/customization/xsl/ {kdocToolsDir}/customization/xsl/".format(docbookXslLocation=docbookXslLocation, kdocToolsDir=kdocToolsDir))
 
 def findDir(filename, search_path, content = None):
   file_found = 0

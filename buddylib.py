@@ -27,11 +27,12 @@ import sys
 import ConfigParser
 from buddylogger import *
 import re
+import fnmatch
 
 def BuddyVersion():
   return "0.91"
 
-COMMANDS= ['list','checkout','pack', 'pack_all', 'tag', 'checksum', 'checksums', 'upload', 'upload_all']
+COMMANDS= ['list','checkout','pack', 'pack_all', 'tag', 'checksum', 'checksums', 'upload', 'upload_all', 'version', 'versions']
 def verifyCommand(command):
   if command in COMMANDS:
     return True
@@ -171,13 +172,13 @@ def getSVNRevision():
 def getArchive(options, project, version):
   ChangeDir(options, options.Tarballs)
 
-  archive = project['name'] + '-' + version + ".tar"
-  if os.path.exists(archive + ".gz"):
-    archive = archive + ".gz"
-  elif os.path.exists(archive + ".bz2"):
-    archive = archive + ".bz2"
-  elif os.path.exists(archive + ".xz"):
-    archive = archive + ".xz"
-  else:
-    fail("Unable to locate tarball for '%s-%s'"%(project['name'],version))
-  return archive
+  archive = project['name']
+  prefix = ''
+  if os.path.exists(archive) and os.path.isdir(archive):
+    prefix = archive + os.sep
+
+  archives = glob.glob('{prefix}{name}*-{version}.tar.*'.format(prefix = prefix, name = project['name'], version = version))
+  
+  if  len(archives) == 0:
+    fail("Unable to locate tarball(s) for '%s-%s'"%(project['name'],version))
+  return archives
