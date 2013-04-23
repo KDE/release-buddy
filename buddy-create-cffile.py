@@ -93,6 +93,8 @@ Git=git@git.kde.org                           ;read-write url
 SVNROOT=svn+ssh://svn.kde.org/home/kde        ;read-write url
 SVN=%(SVNROOT)s/branches
 SVNTAG=%(SVNROOT)s/tags/KDE/%(Major)s.%(Minor)s.%(Patch)s
+# This is executed using the shell=True parameter to popen so review before executing the packing
+PrePackCommand=
 
 [General]
 Collection=kde  ;kde for example

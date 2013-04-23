@@ -29,15 +29,24 @@ from buddylib import *
 def buddy_pack_all(options, projects, version):
   prepare_documentation_tools(options)
   for project in projects:
+    if project['prePackCommand']:
+      info("Project {name} has a custom pre pack command.".format(name=project['name']))
+      RUNIT(options, project['prePackCommand'])
+
     package(options, project['name'], version)
 
 def buddy_pack(options, project, version):
+  if project['prePackCommand']:
+    info("Project {name} has a custom pre pack command.".format(name=project['name']))
+    RUNIT(options, project['prePackCommand'], shell=True)
+
   prepare_documentation_tools(options)
-  return package(options, project['name'], version)
+  package(options, project['name'], version)
 
 def package(options, name, version):
   if name == 'kde-l10n':
-    return package_l10n(options, name, version)
+    package_l10n(options, name, version)
+    return
 
   info("Packaging %s-%s"%(name, version))
   #TODO: Set versions (see readme from sysadmin/release-tools)

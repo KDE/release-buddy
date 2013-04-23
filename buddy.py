@@ -128,7 +128,7 @@ def main():
 
 ### Generate the List of Projects
   PPrefix = "Project:"
-  Projs = {'name':'', 'desc':'', 'url':''}
+  Projs = {'name':'', 'desc':'', 'url':'', 'prePackCommand':''}
   AllPs = []
   
   for section in cfParser.sections():
@@ -143,9 +143,12 @@ def main():
       if not Projs['url']:
         fail("ConfigFile is missing a \"Url\" setting for project \"" + section + "\"")
 
+      Projs['prePackCommand'] = cfParser.get(section,'PrePackCommand')
+
       AllPs.append({'name' : Projs['name'].replace(PPrefix,''),
                     'desc' : Projs['desc'],
-                    'url'  : Projs['url']})
+                    'url'  : Projs['url'],
+                    'prePackCommand': Projs['prePackCommand']})
 
 ### Check projects specified on the command line
   Ps = []
