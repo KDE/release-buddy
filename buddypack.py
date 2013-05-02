@@ -27,29 +27,40 @@ from buddylib import *
 
 
 def buddy_pack_all(options, projects, version):
+  MakeDir(options, options.Workdir, "Workdir")
+
   prepare_documentation_tools(options)
   for project in projects:
     if project['prePackCommand']:
       info("Project {name} has a custom pre pack command.".format(name=project['name']))
-      RUNIT(options, project['prePackCommand'])
+      cwd = os.path.join(options.Sources, project['name'])
+      ChangeDir(options, cwd)
+      RUNIT(options, project['prePackCommand'].format(cwd=cwd, name = project['name'], version = version))
 
     package(options, project['name'], version)
 
 def buddy_pack(options, project, version):
+  MakeDir(options, options.Workdir, "Workdir")
+
   if project['prePackCommand']:
     info("Project {name} has a custom pre pack command.".format(name=project['name']))
-    RUNIT(options, project['prePackCommand'], shell=True)
+    cwd = os.path.join(options.Sources, project['name'])
+    ChangeDir(options, cwd)
+    RUNIT(options, project['prePackCommand'].format(cwd=cwd, name = project['name'], version = version))
 
   prepare_documentation_tools(options)
   package(options, project['name'], version)
 
 def package(options, name, version):
+  if os.path.exists( os.path.join( options.Workdir, name) ) and not options.Resume:
+    info("Removing old workdir")
+    shutil.rmtree(os.path.join( options.Workdir, name))
+
   if name == 'kde-l10n':
     package_l10n(options, name, version)
     return
 
   info("Packaging %s-%s"%(name, version))
-  #TODO: Set versions (see readme from sysadmin/release-tools)
 
   packExecutable = options.packExecutable
   archive = name + '-' + version + ".tar." + packExecutable 
@@ -60,23 +71,41 @@ def package(options, name, version):
     info("Resume specified and tarball exists, skipping.")
     return
 
+  # Copy the unaltered sources to a working directory where we can play how ever we like
+  info("Copying sources to the workdir")
+  MakeDir(options, options.Workdir, "Workdir")
+  shutil.copytree( os.path.join( options.Sources, name), os.path.join( options.Workdir, name), ignore=shutil.ignore_patterns('.git', '.svn') )
+
+  ChangeDir(options, options.Workdir)
   make_dokumentation(options, name)
 
-  ChangeDir(options, options.Sources)
-
-  RUNIT(options, options.prePackCommand.format(source = source, version = version))
+  ChangeDir(options, options.Workdir)
+  RUNIT(options, options.prePackCommand.format(source = source, destination = source + "-" + version))
   RUNIT(options, options.packCommand.format(source=source + "-" + version, destination=destination))
-  RUNIT(options, options.postPackCommand.format(source = source, version = version))
+  RUNIT(options, options.postPackCommand.format(destination = source + "-" + version))
 
   info(makeASubLine())
 
 def package_l10n(options, name, version):
   info("Packaging languages for version: %s"%(version))
   packExecutable = options.packExecutable
-  ChangeDir(options, os.path.join(options.Sources, name))
+
+  # Copy the unaltered sources to a working directory where we can play how ever we like
+  info("Copying sources to the workdir")
+  shutil.copytree( os.path.join( options.Sources, name), os.path.join( options.Workdir, name), ignore=shutil.ignore_patterns('.git', '.svn') )
+  ChangeDir(options, os.path.join( options.Workdir, name) )
+
+  make_dokumentation(options, name)
+
   with open('subdirs', 'r') as f:
     for lang in f:
       lang = lang.strip()
+
+      info(lang + "...")
+      ChangeDir(options, os.path.join( options.Workdir, name) )
+      if not os.path.isdir(lang):
+        info(lang + "... not present (%s)"%os.getcwd())
+        continue
 
       archive = name + "-" + lang + '-' + version + ".tar." + packExecutable 
       destination = os.path.join(options.Tarballs, name, archive)
@@ -85,25 +114,79 @@ def package_l10n(options, name, version):
         info("Resume specified and tarball exists, skipping.")
         continue
 
+      ChangeDir(options, os.path.join( options.Workdir, name, lang) )
+
+      removeWithWildcard(options, "internal")
+      removeWithWildcard(options, "docmessages") 
+      removeWithWildcard(options, "webmessages")
+      removeWithWildcard(options, "messages/*/desktop_*")
+      removeWithWildcard(options, "messages/others")
+      removeWithWildcard(options, "messages/index.lokalize")
+      removeWithWildcard(options, "docs/others")
+      removeWithWildcard(options, "messages/kdenonbeta")
+      removeWithWildcard(options, "docs/kdenonbeta")
+      removeWithWildcard(options, "messages/extragear-*")
+      removeWithWildcard(options, "messages/www")
+      removeWithWildcard(options, "messages/playground-*")
+      removeWithWildcard(options, "messages/no-auto-merge")
+      removeWithWildcard(options, "docs/extragear-*")
+      removeWithWildcard(options, "docs/playground-*")
+      removeWithWildcard(options, "messages/kdekiosk")
+      removeWithWildcard(options, "docs/kdekiosk")
+      removeWithWildcard(options, "messages/play*") 
+      removeWithWildcard(options, "messages/kdereview")
+      removeWithWildcard(options, "*/koffice")
+      removeWithWildcard(options, "*/calligra")
+      removeWithWildcard(options, "messages/kdevelop")
+      removeWithWildcard(options, "docs/kdevelop")
+      removeWithWildcard(options, "messages/kdevplatform")
+      removeWithWildcard(options, "docs/kdevplatform")
+      removeWithWildcard(options, "docs/kdewebdev/quanta*")
+      removeWithWildcard(options, "messages/kdewebdev/quanta*")
+      removeWithWildcard(options, "no-auto-merge")
+      removeWithWildcard(options, "*/no-auto-merge")
+
+      #ChangeDir(options, os.path.join(options.Sources, name))
+      #removeWithWildcard(options, "templates")
+
       if not fileContains( os.path.join( options.buddyDir, 'language_list'), lang):
         info("Skipping {lang}, it does not meet the release criteria".format(lang=lang))
         continue
 
+      if os.path.exists( "pack-with-variants" ):
+        info("Bundling language variants to be packed together")
+        with open( "pack-with-variants", 'r') as f:
+          for sublang in f:
+            sublang = sublang.strip()
+            if not fileContains( os.path.join( options.buddyDir, 'language_list'), sublang):
+              info("Skipping {lang}, it does not meet the release criteria".format(lang=sublang))
+              continue
+            info("Moving {sublang} into {lang}".format(sublang=sublang, lang=lang))
+            shutil.move(os.path.join(options.Workdir, name, sublang),os.path.join(options.Workdir, name, lang))
+        removeWithWildcard(options, "pack-with-variants")
+
+      ChangeDir(options, os.path.join(options.Workdir, name))
       RUNIT(options, "bash scripts/autogen.sh " + lang)
 
-      ChangeDir(options, os.path.join(options.Sources, name))
+      packageDirName = name + "-" + lang + "-" + version
+
       MakeDir(options, os.path.join(options.Tarballs, name), "Sources")
-      RUNIT(options, options.packCommand.format(source=lang, destination=destination))
+      ChangeDir(options, os.path.join(options.Workdir, name))
+      RUNIT(options, options.prePackCommand.format(source = lang, destination = packageDirName))
+      RUNIT(options, options.packCommand.format(source = packageDirName, destination = destination))
+      RUNIT(options, options.postPackCommand.format(destination = packageDirName))
+
+      info(lang + "... done")
 
   info(makeASubLine())
 
 def make_dokumentation(options, name):
-  source = options.Sources
-  packageDir = os.path.join(options.Sources, name)
+  source = options.Workdir
+  packageDir = os.path.join(options.Workdir, name)
   threads = multiprocessing.cpu_count() + 1
   kdocToolsDir = os.path.join(options.Top, "kdocToolsDir")
   command = options.makeDocumentationCommand.format(source=source, packageDir = packageDir, threads = threads, kdocToolsDir = kdocToolsDir)
-  ChangeDir(options, os.path.join(options.Sources, name))
+  ChangeDir(options, os.path.join(options.Workdir, name))
   RUNIT(options, command)
 
 def prepare_documentation_tools(options):
@@ -132,7 +215,7 @@ def prepare_documentation_tools(options):
     fail("kdelibs must be in the sources directory (%s)"%options.Sources)
   RUNIT(options, "rm -rf {kdocToolsDir}".format(kdocToolsDir=kdocToolsDir))
   RUNIT(options, "cp -R {kdoctools} {kdocToolsDir}".format(kdoctools = os.path.join(options.Sources, "kdelibs", "kdoctools"), kdocToolsDir = kdocToolsDir))
-  RUNIT(options, "cp {buddyDir}/Makefile.docu {sources}".format(sources=options.Sources, buddyDir=options.buddyDir))
+  RUNIT(options, "cp {buddyDir}/Makefile.docu {sources}".format(sources=options.Workdir, buddyDir=options.buddyDir))
 
   # Create the helper
   cppFlags = " -I" + " -I".join( includePaths )

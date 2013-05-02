@@ -30,6 +30,7 @@ def buddy_doit(command, options, project, branch, version):
 
   options.Sources = options.Top + os.sep + "sources"
   options.Tarballs = options.Top + os.sep + "tarballs"
+  options.Workdir = options.Top + os.sep + "workdir"
 
   if command == "list":
     return buddy_list(options, project, branch)

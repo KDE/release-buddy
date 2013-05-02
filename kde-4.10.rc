@@ -39,11 +39,6 @@ Collection=kde  ;kde for example
 ## Below here is a list of all the projects for this collection ##
 ##################################################################
 
-[Project:kde-test]
-PrePackCommand=
-Url=None
-Desc=
-
 ## Start SVN projects list
 [Project:kde-l10n]
 Url=%(SVN)s/stable/l10n-kde4

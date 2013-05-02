@@ -13,9 +13,9 @@ docbookSearchPaths=/usr/share/xml/docbook/schema/dtd/4.2/:/usr/share/xml/docbook
 TOP=/code/kde/tmp/buddy
 
 [Pack]
-prePackCommand=cp -prl {source} {source}-{version}
+prePackCommand=cp -prl {source} {destination}
 packCommand=%(tarExecutable)s %(tarOptions)s %(extraExclude)s -I %(packExecutable)s -f {destination} {source}
-postPackCommand=rm -rf {source}-{version}
+postPackCommand=rm -rf {destination}
 extraExclude=
 makeDocumentationCommand=%(makeExecutable)s -k -f {source}/Makefile.docu -j{threads} SOURCE_DIR={packageDir} KDOCTOOLS_DIR={kdocToolsDir}
 compileDocbookHelperCommand=%(cppExecutable)s {cppFlags} {kdocToolsDir}/docbookl10nhelper.cpp {ldFlags} -o {kdocToolsDir}/docbookl10nhelper

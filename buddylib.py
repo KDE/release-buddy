@@ -28,6 +28,8 @@ import ConfigParser
 from buddylogger import *
 import re
 import fnmatch
+import glob
+import shutil
 
 def BuddyVersion():
   return "0.91"
@@ -182,3 +184,13 @@ def getArchive(options, project, version):
   if  len(archives) == 0:
     fail("Unable to locate tarball(s) for '%s-%s'"%(project['name'],version))
   return archives
+
+def removeWithWildcard(options, path):
+  files = glob.glob(path)
+  for item in files:
+    info("=> Removing %s"%item)
+    if not options.dryrun:
+      if os.path.isdir(item):
+        shutil.rmtree(item)
+      else:
+        os.unlink(item)

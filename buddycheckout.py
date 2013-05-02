@@ -54,6 +54,7 @@ def svn_update(options, name, url):
     RUNIT(options, "svn", "checkout " + url + " " + name)
   elif os.path.exists(name + os.sep + ".svn"):
     RUNIT(options, "svn", "cleanup " + name)
+    RUNIT(options, "svn", "revert -R " + name)
     RUNIT(options, "svn", "relocate " + url + " " + name)
     RUNIT(options, "svn", "update " + name)
   else:
