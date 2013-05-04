@@ -182,7 +182,10 @@ def getArchive(options, project, version):
   archives = glob.glob('{prefix}{name}*-{version}.tar.*'.format(prefix = prefix, name = project['name'], version = version))
   
   if  len(archives) == 0:
-    fail("Unable to locate tarball(s) for '%s-%s'"%(project['name'],version))
+    if options.keepgoing:
+      warn("Unable to locate tarball(s) for '%s-%s'"%(project['name'],version))
+    else:
+     fail("Unable to locate tarball(s) for '%s-%s'"%(project['name'],version))
   return archives
 
 def removeWithWildcard(options, path):
